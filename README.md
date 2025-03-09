@@ -138,32 +138,32 @@ The calculator then applies a simplified version of the Social Security benefit 
 
 ## Tax Bracket Estimation
 
-### 2023 Federal Tax Brackets
-The calculator uses 2023 federal income tax brackets:
+### 2025 Federal Tax Brackets
+The calculator uses 2025 federal income tax brackets (projected with inflation adjustments):
 
 #### Single Filers
-- 10%: $0 to $11,000
-- 12%: $11,001 to $44,725
-- 22%: $44,726 to $95,375
-- 24%: $95,376 to $182,100
-- 32%: $182,101 to $231,250
-- 35%: $231,251 to $578,125
-- 37%: $578,126+
+- 10%: $0 to $11,925
+- 12%: $11,926 to $48,500
+- 22%: $48,501 to $103,400
+- 24%: $103,401 to $197,450
+- 32%: $197,451 to $250,800
+- 35%: $250,801 to $626,950
+- 37%: $626,951+
 
 #### Married Filing Jointly
-- 10%: $0 to $22,000
-- 12%: $22,001 to $89,450
-- 22%: $89,451 to $190,750
-- 24%: $190,751 to $364,200
-- 32%: $364,201 to $462,500
-- 35%: $462,501 to $693,750
-- 37%: $693,751+
+- 10%: $0 to $23,850
+- 12%: $23,851 to $97,000
+- 22%: $97,001 to $206,800
+- 24%: $206,801 to $394,900
+- 32%: $394,901 to $501,600
+- 35%: $501,601 to $752,350
+- 37%: $752,351+
 
-### Standard Deductions (2023)
-- Single: $13,850
-- Married Filing Jointly: $27,700
-- Head of Household: $20,800
-- Married Filing Separately: $13,850
+### Standard Deductions (2025)
+- Single: $15,000
+- Married Filing Jointly: $30,000
+- Head of Household: $22,550
+- Married Filing Separately: $15,000
 
 ### Social Security Taxation
 The calculator determines how much of your Social Security benefits are taxable using the IRS "combined income" formula:
