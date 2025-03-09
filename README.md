@@ -20,6 +20,7 @@ This tool helps answer critical questions such as:
 - When should I claim Social Security benefits?
 - What will my tax situation look like in retirement?
 
+![image](screen.png)
 ## Features
 
 ### Core Retirement Analysis
@@ -231,3 +232,6 @@ Taxable percentage based on combined income:
 ---
 
 This retirement calculator provides a comprehensive framework for retirement planning, incorporating multiple financial aspects into a single tool. While it offers sophisticated analysis, remember that it's based on user inputs and projections which may not represent actual future conditions. For personalized financial advice, consider consulting with a certified financial planner.
+
+
+[def]: screen.png
