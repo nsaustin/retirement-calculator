@@ -1,0 +1,2760 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Retirement Calculator</title>
+    <style>
+        :root {
+            --primary-color: #3a6ea5;
+            --secondary-color: #c0d6df;
+            --accent-color: #ff6b6b;
+            --text-color: #333;
+            --background-color: #f9f9f9;
+            --card-color: #ffffff;
+            --border-radius: 8px;
+            --box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            --transition: all 0.3s ease;
+        }
+        
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        body {
+            background-color: var(--background-color);
+            color: var(--text-color);
+            line-height: 1.6;
+            padding: 20px;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        
+        header {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+        
+        h1 {
+            color: var(--primary-color);
+            margin-bottom: 10px;
+        }
+        
+        .description {
+            max-width: 700px;
+            margin: 0 auto 20px;
+        }
+        
+        .card {
+            background-color: var(--card-color);
+            border-radius: var(--border-radius);
+            box-shadow: var(--box-shadow);
+            padding: 25px;
+            margin-bottom: 20px;
+        }
+        
+        .card h2 {
+            color: var(--primary-color);
+            margin-bottom: 15px;
+            border-bottom: 2px solid var(--secondary-color);
+            padding-bottom: 10px;
+        }
+        
+        .form-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+            gap: 15px;
+        }
+        
+        .form-group {
+            margin-bottom: 15px;
+        }
+        
+        label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: 500;
+        }
+        
+        input[type="number"], input[type="text"] {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            font-size: 16px;
+        }
+        
+        input:focus {
+            outline: none;
+            border-color: var(--primary-color);
+        }
+        
+        .slider-container {
+            margin-bottom: 15px;
+        }
+        
+        .slider-info {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 5px;
+        }
+        
+        .value-display {
+            font-weight: bold;
+            color: var(--primary-color);
+        }
+        
+        input[type="range"] {
+            width: 100%;
+            margin: 10px 0;
+        }
+        
+        button {
+            background-color: var(--primary-color);
+            color: white;
+            border: none;
+            padding: 12px 20px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 16px;
+            font-weight: 600;
+            transition: var(--transition);
+            width: 100%;
+        }
+        
+        button:hover {
+            background-color: #2a5080;
+        }
+        
+        .results-card {
+            background-color: var(--card-color);
+            border-radius: var(--border-radius);
+            box-shadow: var(--box-shadow);
+            padding: 25px;
+            margin-top: 30px;
+            display: none;
+        }
+        
+        .results-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 20px;
+        }
+        
+        .metric {
+            padding: 15px;
+            border-radius: var(--border-radius);
+            background-color: var(--secondary-color);
+            text-align: center;
+        }
+        
+        .metric-title {
+            font-size: 14px;
+            color: var(--primary-color);
+            margin-bottom: 5px;
+        }
+        
+        .metric-value {
+            font-size: 24px;
+            font-weight: bold;
+            color: var(--text-color);
+        }
+        
+        .insight {
+            margin-top: 20px;
+            padding: 15px;
+            background-color: rgba(58, 110, 165, 0.1);
+            border-left: 4px solid var(--primary-color);
+            border-radius: 0 var(--border-radius) var(--border-radius) 0;
+        }
+        
+        .insight-title {
+            font-weight: bold;
+            margin-bottom: 5px;
+        }
+        
+        .ready {
+            color: #2ecc71;
+        }
+        
+        .not-ready {
+            color: var(--accent-color);
+        }
+        
+        .calculation-note {
+            margin-top: 20px;
+            font-size: 0.9em;
+            color: #666;
+            font-style: italic;
+        }
+        
+        @media (max-width: 768px) {
+            .form-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .results-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+		.secondary-btn {
+    background-color: var(--secondary-color);
+    color: var(--primary-color);
+    border: 1px solid var(--primary-color);
+    padding: 10px 20px;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 16px;
+    font-weight: 600;
+    transition: var(--transition);
+}
+
+.secondary-btn:hover {
+    background-color: var(--primary-color);
+    color: white;
+}
+
+.selected-age {
+    font-weight: bold;
+    background-color: rgba(58, 110, 165, 0.1);
+}
+
+.table-container {
+    overflow-x: auto;
+}
+
+.ss-benefit-table table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 15px;
+}
+
+.ss-benefit-table th, .ss-benefit-table td {
+    border: 1px solid #ddd;
+    padding: 8px;
+    text-align: center;
+}
+
+.ss-benefit-table th {
+    background-color: var(--secondary-color);
+    color: var(--primary-color);
+}
+
+.form-select {
+    width: 100%;
+    padding: 10px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    font-size: 16px;
+}
+    </style>
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.9.1/chart.min.js"></script>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>Retirement Calculator</h1>
+            <p class="description">Determine if you're financially ready to retire by entering your current expenses, age, and net worth. The calculator will show you how long your money will last based on the 4% rule and other withdrawal strategies.</p>
+        </header>
+        
+        <div class="card">
+            <h2>Personal Information</h2>
+            <div class="form-grid">
+                <div class="form-group">
+                    <label for="current-age">Current Age</label>
+                    <input type="number" id="current-age" placeholder="e.g., 45" min="0" max="120">
+                </div>
+                <div class="form-group">
+                    <label for="net-worth">Current Net Worth ($)</label>
+                    <input type="number" id="net-worth" placeholder="e.g., 1000000" min="0">
+                </div>
+            </div>
+        </div>
+        
+		<div class="card">
+    <h2>Monthly Expenses</h2>
+    <div class="form-group">
+        <label for="expense-input-type">Expense Input Method</label>
+        <select id="expense-input-type" class="form-select">
+            <option value="total">Total Monthly Expenses</option>
+            <option value="detailed">Detailed Expenses by Category</option>
+        </select>
+    </div>
+	
+	    <div id="total-expenses-container">
+        <div class="form-group">
+            <label for="total-monthly-expenses-input">Total Monthly Expenses ($)</label>
+            <input type="number" id="total-monthly-expenses-input" placeholder="e.g., 3500" min="0">
+        </div>
+    </div>
+		
+    <div id="detailed-expenses-container" style="display: none;">
+        <div class="form-grid">
+                <div class="form-group">
+                    <label for="housing">Housing ($)</label>
+                    <input type="number" id="housing" placeholder="e.g., 1500" min="0">
+                </div>
+                <div class="form-group">
+                    <label for="gas-home">Gas (Home) ($)</label>
+                    <input type="number" id="gas-home" placeholder="e.g., 100" min="0">
+                </div>
+                <div class="form-group">
+                    <label for="electric">Electric ($)</label>
+                    <input type="number" id="electric" placeholder="e.g., 150" min="0">
+                </div>
+                <div class="form-group">
+                    <label for="internet">Internet ($)</label>
+                    <input type="number" id="internet" placeholder="e.g., 80" min="0">
+                </div>
+                <div class="form-group">
+                    <label for="insurance">Insurance ($)</label>
+                    <input type="number" id="insurance" placeholder="e.g., 300" min="0">
+                </div>
+                <div class="form-group">
+                    <label for="groceries">Groceries ($)</label>
+                    <input type="number" id="groceries" placeholder="e.g., 500" min="0">
+                </div>
+                <div class="form-group">
+                    <label for="eating-out">Eating Out ($)</label>
+                    <input type="number" id="eating-out" placeholder="e.g., 200" min="0">
+                </div>
+                <div class="form-group">
+                    <label for="gas-car">Gas (Car) ($)</label>
+                    <input type="number" id="gas-car" placeholder="e.g., 150" min="0">
+                </div>
+                <div class="form-group">
+                    <label for="cell-phones">Cell Phones ($)</label>
+                    <input type="number" id="cell-phones" placeholder="e.g., 120" min="0">
+                </div>
+                <div class="form-group">
+                    <label for="public-transit">Public Transit ($)</label>
+                    <input type="number" id="public-transit" placeholder="e.g., 50" min="0">
+                </div>
+                <div class="form-group">
+                    <label for="tolls">Tolls ($)</label>
+                    <input type="number" id="tolls" placeholder="e.g., 40" min="0">
+                </div>
+                <div class="form-group">
+                    <label for="entertainment">Entertainment ($)</label>
+                    <input type="number" id="entertainment" placeholder="e.g., 150" min="0">
+                </div>
+                <div class="form-group">
+                    <label for="clothing">Clothing ($)</label>
+                    <input type="number" id="clothing" placeholder="e.g., 100" min="0">
+                </div>
+                <div class="form-group">
+                    <label for="water-sewer">Water and Sewer ($)</label>
+                    <input type="number" id="water-sewer" placeholder="e.g., 70" min="0">
+                </div>
+                <div class="form-group">
+                    <label for="self-care">Self Care ($)</label>
+                    <input type="number" id="self-care" placeholder="e.g., 100" min="0">
+                </div>
+                <div class="form-group">
+                    <label for="gym">Gym ($)</label>
+                    <input type="number" id="gym" placeholder="e.g., 50" min="0">
+                </div>
+                <div class="form-group">
+                    <label for="music">Music ($)</label>
+                    <input type="number" id="music" placeholder="e.g., 15" min="0">
+                </div>
+                <div class="form-group">
+                    <label for="education">Education ($)</label>
+                    <input type="number" id="education" placeholder="e.g., 100" min="0">
+                </div>
+                <div class="form-group">
+                    <label for="medical">Medical ($)</label>
+                    <input type="number" id="medical" placeholder="e.g., 200" min="0">
+                </div>
+                <div class="form-group">
+                    <label for="gifts">Gifts ($)</label>
+                    <input type="number" id="gifts" placeholder="e.g., 50" min="0">
+                </div>
+                <div class="form-group">
+                    <label for="charity">Charity ($)</label>
+                    <input type="number" id="charity" placeholder="e.g., 100" min="0">
+                </div>
+                <div class="form-group">
+                    <label for="fees">Fees ($)</label>
+                    <input type="number" id="fees" placeholder="e.g., 30" min="0">
+                </div>
+                <div class="form-group">
+                    <label for="misc">Miscellaneous ($)</label>
+                    <input type="number" id="misc" placeholder="e.g., 100" min="0">
+                </div>
+            </div>
+        </div>
+        
+        <div class="card">
+            <h2>Financial Assumptions</h2>
+            <div class="slider-container">
+                <label for="withdrawal-rate">Annual Withdrawal Rate</label>
+                <div class="slider-info">
+                    <span>2.5%</span>
+                    <span class="value-display" id="withdrawal-rate-value">4.0%</span>
+                    <span>6.0%</span>
+                </div>
+                <input type="range" id="withdrawal-rate" min="2.5" max="6.0" step="0.1" value="4.0">
+            </div>
+            
+            <div class="slider-container">
+                <label for="return-rate">Expected Annual Return Rate (before inflation)</label>
+                <div class="slider-info">
+                    <span>3.0%</span>
+                    <span class="value-display" id="return-rate-value">7.0%</span>
+                    <span>10.0%</span>
+                </div>
+                <input type="range" id="return-rate" min="3.0" max="10.0" step="0.1" value="7.0">
+            </div>
+            
+            <div class="slider-container">
+                <label for="inflation-rate">Expected Annual Inflation Rate</label>
+                <div class="slider-info">
+                    <span>1.0%</span>
+                    <span class="value-display" id="inflation-rate-value">2.5%</span>
+                    <span>4.0%</span>
+                </div>
+                <input type="range" id="inflation-rate" min="1.0" max="4.0" step="0.1" value="2.5">
+            </div>
+            
+			<!-- Social Security Benefits Card -->
+<div class="card">
+    <h2>Social Security Benefits</h2>
+    <p class="description">Include your expected Social Security benefits to improve the accuracy of your retirement projections.</p>
+    
+    <div class="form-grid">
+        <div class="form-group">
+            <label for="ss-include">Include Social Security?</label>
+            <select id="ss-include" class="form-select">
+                <option value="yes">Yes</option>
+                <option value="no">No</option>
+            </select>
+        </div>
+        
+        <div class="form-group" id="ss-method-container">
+            <label for="ss-method">Social Security Input Method</label>
+            <select id="ss-method" class="form-select">
+                <option value="statement">I have my Social Security statement</option>
+                <option value="estimate">I need an estimate</option>
+            </select>
+        </div>
+    </div>
+    
+    <!-- Fields for "I have my statement" option -->
+    <div id="ss-statement-fields">
+        <div class="form-grid">
+            <div class="form-group">
+                <label for="ss-monthly-benefit">Monthly Benefit at Full Retirement Age ($)</label>
+                <input type="number" id="ss-monthly-benefit" placeholder="e.g., 2000" min="0">
+            </div>
+            
+            <div class="form-group">
+                <label for="ss-claiming-age">Planned Claiming Age</label>
+                <select id="ss-claiming-age" class="form-select">
+                    <option value="62">62 (earliest)</option>
+                    <option value="63">63</option>
+                    <option value="64">64</option>
+                    <option value="65">65</option>
+                    <option value="66">66</option>
+                    <option value="67" selected>67 (Full Retirement Age)</option>
+                    <option value="68">68</option>
+                    <option value="69">69</option>
+                    <option value="70">70 (maximum benefit)</option>
+                </select>
+            </div>
+        </div>
+        
+        <div class="ss-benefit-table" id="ss-benefit-table">
+            <h3>Estimated Monthly Benefit by Claiming Age</h3>
+            <div class="table-container">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Claiming Age</th>
+                            <th>Monthly Benefit</th>
+                            <th>% of Full Benefit</th>
+                        </tr>
+                    </thead>
+                    <tbody id="ss-benefit-table-body">
+                        <!-- Will be populated by JavaScript -->
+                    </tbody>
+                </table>
+            </div>
+        </div>
+        
+        <!-- Social Security Strategy Chart - MOVED HERE from Results section -->
+        <div id="ss-strategy-comparison-input" style="margin-top: 20px;">
+            <h3>Social Security Claiming Strategy Comparison</h3>
+            <p class="description">This chart shows how different claiming ages affect your monthly benefit and portfolio longevity.</p>
+            <div id="ss-strategy-chart-input" style="width: 100%; height: 300px; margin-top: 15px;"></div>
+        </div>
+    </div>
+    
+    <!-- Fields for "I need an estimate" option -->
+    <div id="ss-estimate-fields" style="display: none;">
+        <div class="form-grid">
+            <div class="form-group">
+                <label for="ss-birth-year">Birth Year</label>
+                <input type="number" id="ss-birth-year" placeholder="e.g., 1965" min="1900" max="2100">
+            </div>
+            
+            <div class="form-group">
+                <label for="ss-years-worked">Years Worked (out of 35)</label>
+                <input type="number" id="ss-years-worked" placeholder="e.g., 30" min="0" max="35" value="35">
+            </div>
+            
+            <div class="form-group">
+                <label for="ss-avg-income">Average Annual Income (highest 35 years) ($)</label>
+                <input type="number" id="ss-avg-income" placeholder="e.g., 60000" min="0">
+            </div>
+            
+            <div class="form-group">
+                <button id="ss-calculate-btn" class="secondary-btn">Calculate Benefit Estimate</button>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Spouse Social Security Section -->
+    <div class="spouse-ss-section">
+        <div class="form-group">
+            <label for="include-spouse">Include Spouse's Social Security?</label>
+            <select id="include-spouse" class="form-select">
+                <option value="no">No</option>
+                <option value="yes">Yes</option>
+            </select>
+        </div>
+        
+        <div id="spouse-ss-fields" style="display: none;">
+            <div class="form-grid">
+                <div class="form-group">
+                    <label for="spouse-monthly-benefit">Spouse's Monthly Benefit at FRA ($)</label>
+                    <input type="number" id="spouse-monthly-benefit" placeholder="e.g., 1800" min="0">
+                </div>
+                
+                <div class="form-group">
+                    <label for="spouse-claiming-age">Spouse's Planned Claiming Age</label>
+                    <select id="spouse-claiming-age" class="form-select">
+                        <option value="62">62 (earliest)</option>
+                        <option value="67" selected>67 (Full Retirement Age)</option>
+                        <option value="70">70 (maximum benefit)</option>
+                    </select>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Income Tax Bracket Estimation Card -->
+<div class="card">
+    <h2>Income Tax Bracket Estimation</h2>
+    <p class="description">Estimate your tax bracket in retirement based on projected income sources and filing status.</p>
+    
+    <div class="form-grid">
+        <div class="form-group">
+            <label for="tax-filing-status">Filing Status</label>
+            <select id="tax-filing-status" class="form-select">
+                <option value="single">Single</option>
+                <option value="married">Married Filing Jointly</option>
+                <option value="head">Head of Household</option>
+                <option value="separate">Married Filing Separately</option>
+            </select>
+        </div>
+        
+        <div class="form-group">
+            <label for="tax-deduction-type">Deduction Type</label>
+            <select id="tax-deduction-type" class="form-select">
+                <option value="standard">Standard Deduction</option>
+                <option value="itemized">Itemized Deductions</option>
+            </select>
+        </div>
+        
+        <div class="form-group" id="itemized-deduction-container" style="display: none;">
+            <label for="itemized-deduction-amount">Itemized Deduction Amount ($)</label>
+            <input type="number" id="itemized-deduction-amount" placeholder="e.g., 25000" min="0">
+        </div>
+    </div>
+    
+    <h3>Retirement Income Sources</h3>
+    <div class="form-grid">
+        <div class="form-group">
+            <label for="tax-social-security">Social Security (Annual) ($)</label>
+            <input type="number" id="tax-social-security" placeholder="e.g., 30000" min="0">
+        </div>
+        
+        <div class="form-group">
+            <label for="tax-pension">Pension Income (Annual) ($)</label>
+            <input type="number" id="tax-pension" placeholder="e.g., 20000" min="0">
+        </div>
+        
+        <div class="form-group">
+            <label for="tax-traditional-ira">Traditional IRA/401(k) Withdrawals (Annual) ($)</label>
+            <input type="number" id="tax-traditional-ira" placeholder="e.g., 40000" min="0">
+        </div>
+        
+        <div class="form-group">
+            <label for="tax-roth">Roth IRA/401(k) Withdrawals (Annual) ($)</label>
+            <input type="number" id="tax-roth" placeholder="e.g., 15000" min="0">
+        </div>
+        
+        <div class="form-group">
+            <label for="tax-investments">Investment Income (Annual) ($)</label>
+            <input type="number" id="tax-investments" placeholder="e.g., 10000" min="0">
+        </div>
+        
+        <div class="form-group">
+            <label for="tax-rental">Rental Income (Annual) ($)</label>
+            <input type="number" id="tax-rental" placeholder="e.g., 12000" min="0">
+        </div>
+        
+        <div class="form-group">
+            <label for="tax-other">Other Taxable Income (Annual) ($)</label>
+            <input type="number" id="tax-other" placeholder="e.g., 5000" min="0">
+        </div>
+    </div>
+    
+    <div style="margin-top: 20px;">
+        <button id="calculate-tax-btn" class="secondary-btn">Calculate Tax Bracket</button>
+    </div>
+    
+    <!-- Tax Bracket Results Section (Initially Hidden) -->
+    <div id="tax-results" style="display: none; margin-top: 25px;">
+        <h3>Tax Bracket Analysis</h3>
+        
+        <div class="results-grid" style="grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));">
+            <div class="metric">
+                <div class="metric-title">Total Annual Income</div>
+                <div class="metric-value" id="total-income">$0</div>
+            </div>
+            <div class="metric">
+                <div class="metric-title">Taxable Income</div>
+                <div class="metric-value" id="taxable-income">$0</div>
+            </div>
+            <div class="metric">
+                <div class="metric-title">Marginal Tax Bracket</div>
+                <div class="metric-value" id="marginal-tax-bracket">0%</div>
+            </div>
+            <div class="metric">
+                <div class="metric-title">Effective Tax Rate</div>
+                <div class="metric-value" id="effective-tax-rate">0%</div>
+            </div>
+            <div class="metric">
+                <div class="metric-title">Estimated Federal Tax</div>
+                <div class="metric-value" id="estimated-tax">$0</div>
+            </div>
+        </div>
+        
+        <div class="insight" style="margin-top: 20px;">
+            <div class="insight-title">Income Breakdown:</div>
+            <div class="table-container">
+                <table style="width: 100%; border-collapse: collapse; margin-top: 10px;">
+                    <thead>
+                        <tr>
+                            <th style="text-align: left; padding: 8px; border-bottom: 2px solid var(--secondary-color);">Income Source</th>
+                            <th style="text-align: right; padding: 8px; border-bottom: 2px solid var(--secondary-color);">Amount</th>
+                            <th style="text-align: right; padding: 8px; border-bottom: 2px solid var(--secondary-color);">Taxable Amount</th>
+                        </tr>
+                    </thead>
+                    <tbody id="income-breakdown-table">
+                        <!-- Will be filled by JavaScript -->
+                    </tbody>
+                </table>
+            </div>
+        </div>
+        
+        <div class="insight" style="margin-top: 20px;">
+            <div class="insight-title">Tax Bracket Breakdown:</div>
+            <div class="table-container">
+                <table style="width: 100%; border-collapse: collapse; margin-top: 10px;">
+                    <thead>
+                        <tr>
+                            <th style="text-align: left; padding: 8px; border-bottom: 2px solid var(--secondary-color);">Tax Bracket</th>
+                            <th style="text-align: right; padding: 8px; border-bottom: 2px solid var(--secondary-color);">Income in Bracket</th>
+                            <th style="text-align: right; padding: 8px; border-bottom: 2px solid var(--secondary-color);">Tax in Bracket</th>
+                        </tr>
+                    </thead>
+                    <tbody id="tax-bracket-table">
+                        <!-- Will be filled by JavaScript -->
+                    </tbody>
+                </table>
+            </div>
+        </div>
+        
+        <div class="insight" style="margin-top: 20px;">
+            <div class="insight-title">Tax Insights:</div>
+            <p id="tax-insights-text"></p>
+        </div>
+        
+        <div id="tax-strategy-chart-container" style="width: 100%; height: 300px; margin-top: 25px;">
+            <!-- Chart will be added here -->
+        </div>
+    </div>
+</div>
+			
+            <button id="calculate-btn">Calculate Retirement Readiness</button>
+        </div>
+        
+        <div class="results-card" id="results">
+            <h2>Your Retirement Analysis</h2>
+            
+            <div class="results-grid">
+                <div class="metric">
+                    <div class="metric-title">Total Monthly Expenses</div>
+                    <div class="metric-value" id="total-monthly-expenses">$0</div>
+                </div>
+                <div class="metric">
+                    <div class="metric-title">Annual Expenses</div>
+                    <div class="metric-value" id="annual-expenses">$0</div>
+                </div>
+                <div class="metric">
+                    <div class="metric-title">Required Retirement Savings</div>
+                    <div class="metric-value" id="required-savings">$0</div>
+                </div>
+                <div class="metric">
+                    <div class="metric-title">Real Return Rate (after inflation)</div>
+                    <div class="metric-value" id="real-return-rate">0.0%</div>
+                </div>
+                <!-- Social Security Coverage metric -->
+                <div class="metric">
+                    <div class="metric-title">Social Security Coverage</div>
+                    <div class="metric-value" id="ss-coverage-percent">0%</div>
+                </div>
+            </div>
+            
+            <div class="insight">
+                <div class="insight-title">Key Insights:</div>
+                <p id="retirement-insight"></p>
+            </div>
+            
+            <div class="insight">
+                <div class="insight-title">How Long Your Money Will Last:</div>
+                <p id="money-lasting"></p>
+            </div>
+            
+            <div class="insight">
+                <div class="insight-title">Inflation Impact:</div>
+                <p id="inflation-impact"></p>
+            </div>
+            
+            <!-- Modified Social Security impact section (chart removed) -->
+            <div class="insight" id="ss-impact-section" style="display: none;">
+                <div class="insight-title">Social Security Impact:</div>
+                <p id="ss-impact-text"></p>
+            </div>
+            
+			<div class="insight">
+			<div class="insight-title">Net Worth Projection:</div>
+			<div id="chart-container" style="width: 100%; height: 400px; margin-top: 20px;"></div>
+			</div>
+
+            <div class="calculation-note" style="margin-top: 80px;">
+                <strong>Note:</strong> The calculations account for inflation by using the "real" return rate (nominal return minus inflation rate) when determining how long your money will last. The required retirement savings is based on your initial withdrawal amount and withdrawal rate.
+            </div>
+        </div>
+    </div>
+    
+    <script>
+        // Get DOM elements
+        const withdrawalRateSlider = document.getElementById('withdrawal-rate');
+        const withdrawalRateValue = document.getElementById('withdrawal-rate-value');
+        const returnRateSlider = document.getElementById('return-rate');
+        const returnRateValue = document.getElementById('return-rate-value');
+        const inflationRateSlider = document.getElementById('inflation-rate');
+        const inflationRateValue = document.getElementById('inflation-rate-value');
+        const calculateBtn = document.getElementById('calculate-btn');
+        const resultsCard = document.getElementById('results');
+		const ssIncludeSelect = document.getElementById('ss-include');
+		const ssMethodSelect = document.getElementById('ss-method');
+		const ssStatementFields = document.getElementById('ss-statement-fields');
+		const ssEstimateFields = document.getElementById('ss-estimate-fields');
+		const ssMonthlyBenefit = document.getElementById('ss-monthly-benefit');
+		const ssClaimingAge = document.getElementById('ss-claiming-age');
+		const ssBenefitTable = document.getElementById('ss-benefit-table');
+		const ssBenefitTableBody = document.getElementById('ss-benefit-table-body');
+		const ssCalculateBtn = document.getElementById('ss-calculate-btn');
+		const ssBirthYear = document.getElementById('ss-birth-year');
+		const ssYearsWorked = document.getElementById('ss-years-worked');
+		const ssAvgIncome = document.getElementById('ss-avg-income');
+		const includeSpouse = document.getElementById('include-spouse');
+		const spouseSSFields = document.getElementById('spouse-ss-fields');
+		const spouseMonthlyBenefit = document.getElementById('spouse-monthly-benefit');
+		const spouseClaimingAge = document.getElementById('spouse-claiming-age');
+		const expenseInputType = document.getElementById('expense-input-type');
+		const totalExpensesContainer = document.getElementById('total-expenses-container');
+		const detailedExpensesContainer = document.getElementById('detailed-expenses-container');
+		const totalMonthlyExpensesInput = document.getElementById('total-monthly-expenses-input');
+		
+        
+        // Update sliders value display
+        withdrawalRateSlider.addEventListener('input', () => {
+            withdrawalRateValue.textContent = `${withdrawalRateSlider.value}%`;
+        });
+        
+        returnRateSlider.addEventListener('input', () => {
+            returnRateValue.textContent = `${returnRateSlider.value}%`;
+        });
+        
+        inflationRateSlider.addEventListener('input', () => {
+            inflationRateValue.textContent = `${inflationRateSlider.value}%`;
+        });
+        
+        // Get all expense input fields
+        const expenseFields = [
+            'housing', 'gas-home', 'electric', 'internet', 'insurance', 
+            'groceries', 'eating-out', 'gas-car', 'cell-phones', 'public-transit', 
+            'tolls', 'entertainment', 'clothing', 'water-sewer', 'self-care', 
+            'gym', 'music', 'education', 'medical', 'gifts', 'charity', 'fees', 'misc'
+        ];
+        
+				// Handle switching between total and detailed views
+		expenseInputType.addEventListener('change', function() {
+			if (this.value === 'total') {
+				totalExpensesContainer.style.display = 'block';
+				detailedExpensesContainer.style.display = 'none';
+				
+				// If we're switching from detailed to total, sum up the current detailed values
+				if (totalMonthlyExpensesInput.value === '') {
+					let sum = 0;
+					expenseFields.forEach(field => {
+						const value = parseFloat(document.getElementById(field).value) || 0;
+						sum += value;
+					});
+					
+					if (sum > 0) {
+						totalMonthlyExpensesInput.value = sum;
+					}
+				}
+			} else {
+				totalExpensesContainer.style.display = 'none';
+				detailedExpensesContainer.style.display = 'block';
+			}
+		});
+		// Fill with sample data for easy testing
+        function fillSampleData() {
+            document.getElementById('current-age').value = 45;
+            document.getElementById('net-worth').value = 1000000;
+            // For total expenses input
+			document.getElementById('total-monthly-expenses-input').value = 3355; // Sum of all detailed expenses
+			
+			// For detailed expenses input
+            const sampleExpenses = {
+                'housing': 1500, 
+                'gas-home': 100, 
+                'electric': 150, 
+                'internet': 80, 
+                'insurance': 300, 
+                'groceries': 500, 
+                'eating-out': 200, 
+                'gas-car': 150, 
+                'cell-phones': 120, 
+                'public-transit': 50, 
+                'tolls': 40, 
+                'entertainment': 150, 
+                'clothing': 100, 
+                'water-sewer': 70, 
+                'self-care': 100, 
+                'gym': 50, 
+                'music': 15, 
+                'education': 100, 
+                'medical': 200, 
+                'gifts': 50, 
+                'charity': 100, 
+                'fees': 30, 
+                'misc': 100
+            };
+            
+            expenseFields.forEach(field => {
+                document.getElementById(field).value = sampleExpenses[field];
+            });
+        }
+        
+        // Function to calculate how long money will last with inflation
+// Replace the existing calculateMoneyDuration function with this improved version
+function calculateMoneyDuration(principal, annualExpenses, withdrawalRate, nominalReturnRate, inflationRate) {
+    // Calculate real return rate (adjusted for inflation)
+    const realReturnRate = (1 + nominalReturnRate) / (1 + inflationRate) - 1;
+    
+    // If withdrawal rate equals or is less than real return rate, money lasts indefinitely
+    if (withdrawalRate <= realReturnRate) {
+        return {
+            lastsForever: true,
+            realReturnRate: realReturnRate
+        };
+    }
+    
+    // For cases where withdrawal exceeds return rate
+    // Use a direct simulation approach instead of the logarithmic formula
+    let currentBalance = principal;
+    let years = 0;
+    const maxYears = 200; // Cap to prevent infinite loops
+    
+    // Calculate the initial annual withdrawal
+    let currentAnnualWithdrawal = annualExpenses;
+    
+    // Simulate year by year until money runs out or we reach maxYears
+    while (currentBalance > 0 && years < maxYears) {
+        // Investment returns for the year
+        const investmentReturns = currentBalance * nominalReturnRate;
+        
+        // Withdraw money
+        currentBalance = currentBalance + investmentReturns - currentAnnualWithdrawal;
+        
+        // Adjust withdrawal for next year's inflation
+        currentAnnualWithdrawal *= (1 + inflationRate);
+        
+        years++;
+    }
+    
+    return {
+        lastsForever: years >= maxYears,
+        years: years,
+        realReturnRate: realReturnRate
+    };
+}
+        
+        // Function to format currency
+        function formatCurrency(amount) {
+            return new Intl.NumberFormat('en-US', {
+                style: 'currency',
+                currency: 'USD',
+                maximumFractionDigits: 0
+            }).format(amount);
+        }
+		// Function to calculate total monthly expenses based on input method
+		function calculateTotalMonthlyExpenses() {
+			if (document.getElementById('expense-input-type').value === 'total') {
+				return parseFloat(document.getElementById('total-monthly-expenses-input').value) || 0;
+			} else {
+				let total = 0;
+				expenseFields.forEach(field => {
+					const value = parseFloat(document.getElementById(field).value) || 0;
+					total += value;
+				});
+				return total;
+			}
+		}
+        // Calculate purchasing power after inflation
+        function calculateFuturePurchasingPower(amount, inflationRate, years) {
+            return amount / Math.pow(1 + inflationRate, years);
+        }
+        
+        // Calculate retirement readiness
+		calculateBtn.addEventListener('click', () => {
+			// Get inputs
+			const currentAge = parseFloat(document.getElementById('current-age').value) || 0;
+			const netWorth = parseFloat(document.getElementById('net-worth').value) || 0;
+			const withdrawalRate = parseFloat(withdrawalRateSlider.value) / 100;
+			const nominalReturnRate = parseFloat(returnRateSlider.value) / 100;
+			const inflationRate = parseFloat(inflationRateSlider.value) / 100;
+			
+			// Calculate total monthly expenses using the new function
+			const totalMonthlyExpenses = calculateTotalMonthlyExpenses();
+			
+			// Calculate annual expenses
+			const annualExpenses = totalMonthlyExpenses * 12;
+            
+            // Calculate required retirement savings based on withdrawal rate
+            const requiredSavings = annualExpenses / withdrawalRate;
+            
+            // Calculate real return rate (nominal return adjusted for inflation)
+            const realReturnRate = (1 + nominalReturnRate) / (1 + inflationRate) - 1;
+            
+            // Display results
+            document.getElementById('total-monthly-expenses').textContent = formatCurrency(totalMonthlyExpenses);
+            document.getElementById('annual-expenses').textContent = formatCurrency(annualExpenses);
+            document.getElementById('required-savings').textContent = formatCurrency(requiredSavings);
+            document.getElementById('real-return-rate').textContent = `${(realReturnRate * 100).toFixed(1)}%`;
+            
+            // Calculate retirement readiness
+            const isReadyToRetire = netWorth >= requiredSavings;
+            const shortfall = requiredSavings - netWorth;
+            
+            // Calculate money duration
+            const moneyDuration = calculateMoneyDuration(
+                netWorth, 
+                annualExpenses, 
+                withdrawalRate, 
+                nominalReturnRate, 
+                inflationRate
+            );
+            
+            // Generate retirement insight
+            let insightText = '';
+            if (isReadyToRetire) {
+                insightText = `<span class="ready">Congratulations! Based on your current expenses and net worth of ${formatCurrency(netWorth)}, you are financially ready to retire. Your net worth exceeds the required amount of ${formatCurrency(requiredSavings)} needed to sustain your current lifestyle with a ${withdrawalRateSlider.value}% withdrawal rate.`;
+            } else {
+                insightText = `<span class="not-ready">Based on your current expenses and net worth of ${formatCurrency(netWorth)}, you still need an additional ${formatCurrency(shortfall)} to reach your retirement goal. The recommended net worth for your expenses is ${formatCurrency(requiredSavings)} with a ${withdrawalRateSlider.value}% withdrawal rate.`;
+            }
+            
+            document.getElementById('retirement-insight').innerHTML = insightText;
+            
+            // Generate money lasting text
+            let moneyLastingText = '';
+            
+            if (moneyDuration.lastsForever) {
+                moneyLastingText = `With a withdrawal rate of ${withdrawalRateSlider.value}% and a real return rate of ${(moneyDuration.realReturnRate * 100).toFixed(1)}% (after ${inflationRateSlider.value}% inflation), your savings should last indefinitely. Your investments are growing faster than your inflation-adjusted withdrawals, which means your wealth should be sustainable long-term.`;
+            } else {
+                const ageAtDepletion = currentAge + moneyDuration.years;
+                
+                moneyLastingText = `With a withdrawal rate of ${withdrawalRateSlider.value}%, investment returns of ${returnRateSlider.value}%, and inflation at ${inflationRateSlider.value}%, your savings will last approximately <strong>${moneyDuration.years} years (until age ${ageAtDepletion}). After this point, you would need additional income sources.`;
+            }
+            
+            document.getElementById('money-lasting').innerHTML = moneyLastingText;
+            
+            // Generate inflation impact text
+            let inflationImpactText = '';
+            const tenYearPurchasingPower = calculateFuturePurchasingPower(annualExpenses, inflationRate, 10);
+            const twentyYearPurchasingPower = calculateFuturePurchasingPower(annualExpenses, inflationRate, 20);
+            const thirtyYearPurchasingPower = calculateFuturePurchasingPower(annualExpenses, inflationRate, 30);
+            
+            inflationImpactText = `
+                With an inflation rate of ${inflationRateSlider.value}%:
+                <br><br>
+                • Your current annual expenses of ${formatCurrency(annualExpenses)} will have the purchasing power of:
+                <br>
+                • ${formatCurrency(tenYearPurchasingPower)} in 10 years (${(100 - (tenYearPurchasingPower/annualExpenses*100)).toFixed(1)}% loss)
+                <br>
+                • ${formatCurrency(twentyYearPurchasingPower)} in 20 years (${(100 - (twentyYearPurchasingPower/annualExpenses*100)).toFixed(1)}% loss)
+                <br>
+                • ${formatCurrency(thirtyYearPurchasingPower)} in 30 years (${(100 - (thirtyYearPurchasingPower/annualExpenses*100)).toFixed(1)}% loss)
+                <br><br>
+                This means that to maintain your current lifestyle, your withdrawals will need to increase over time to keep pace with inflation.
+            `;
+            
+            document.getElementById('inflation-impact').innerHTML = inflationImpactText;
+            
+            // Show results
+            resultsCard.style.display = 'block';
+            resultsCard.scrollIntoView({ behavior: 'smooth' });
+        });
+        
+        // Uncomment the line below to auto-fill sample data for testing
+        // fillSampleData();
+
+// Function to create the retirement chart
+// Update the createRetirementChart function to include Social Security
+function createRetirementChart(netWorth, annualExpenses, withdrawalRate, nominalReturnRate, inflationRate, years) {
+  // Clear any existing chart
+  const chartContainer = document.getElementById('chart-container');
+  chartContainer.innerHTML = '';
+  
+  // Create chart canvas
+  const canvas = document.createElement('canvas');
+  canvas.id = 'retirement-chart';
+  chartContainer.appendChild(canvas);
+  
+  // Check if Social Security is included
+  const includeSS = ssIncludeSelect.value === 'yes';
+  
+  // Get Social Security information
+  let ssAge = 0;
+  let annualSSBenefit = 0;
+  
+  if (includeSS) {
+    const fraBenefit = parseFloat(ssMonthlyBenefit.value) || 0;
+    const claimingAge = parseInt(ssClaimingAge.value) || 67;
+    const monthlyBenefit = calculateSSBenefit(fraBenefit, claimingAge);
+    
+    // Get spouse information if included
+    let spouseMonthlyAmount = 0;
+    if (includeSpouse.value === 'yes') {
+      const spouseFraBenefit = parseFloat(spouseMonthlyBenefit.value) || 0;
+      const spouseAge = parseInt(spouseClaimingAge.value) || 67;
+      spouseMonthlyAmount = calculateSSBenefit(spouseFraBenefit, spouseAge);
+    }
+    
+    // Total monthly and annual benefit
+    const totalMonthlyBenefit = monthlyBenefit + spouseMonthlyAmount;
+    annualSSBenefit = totalMonthlyBenefit * 12;
+    
+    // Age when benefits start
+    ssAge = claimingAge;
+  }
+  
+  // Current age to know when SS benefits start
+  const currentAge = parseFloat(document.getElementById('current-age').value) || 0;
+  
+  // Calculate projection data without Social Security
+  const projectionDataWithoutSS = calculateNetWorthProjection(
+    netWorth, 
+    annualExpenses, 
+    withdrawalRate, 
+    nominalReturnRate, 
+    inflationRate, 
+    years,
+    false, // No Social Security
+    0, 
+    0,
+    currentAge
+  );
+  
+  // Calculate projection data with Social Security (if applicable)
+  const projectionDataWithSS = includeSS ? calculateNetWorthProjection(
+    netWorth, 
+    annualExpenses, 
+    withdrawalRate, 
+    nominalReturnRate, 
+    inflationRate, 
+    years,
+    true, // Include Social Security
+    annualSSBenefit,
+    ssAge,
+    currentAge
+  ) : null;
+  
+  // Determine the maximum number of years to display
+  let maxYears = projectionDataWithoutSS.length;
+  if (includeSS && projectionDataWithSS.length > maxYears) {
+    maxYears = projectionDataWithSS.length;
+  }
+  
+  // Prepare labels for the full timeline
+  const labels = Array.from({ length: maxYears }, (_, i) => `Year ${i}`);
+  
+  // Prepare data arrays, extending the shorter one with nulls if needed
+  let netWorthDataWithoutSS = projectionDataWithoutSS.map(data => data.netWorth);
+  let inflationAdjustedData = projectionDataWithoutSS.map(data => data.inflationAdjustedNetWorth);
+  
+  // Extend arrays if needed
+  if (netWorthDataWithoutSS.length < maxYears) {
+    const diff = maxYears - netWorthDataWithoutSS.length;
+    netWorthDataWithoutSS = [...netWorthDataWithoutSS, ...Array(diff).fill(0)];
+    inflationAdjustedData = [...inflationAdjustedData, ...Array(diff).fill(0)];
+  }
+  
+  // Create datasets array
+  const datasets = [
+    {
+      label: 'Net Worth (Without Social Security)',
+      data: netWorthDataWithoutSS,
+      backgroundColor: 'rgba(58, 110, 165, 0.7)',
+      borderColor: 'rgba(58, 110, 165, 1)',
+      borderWidth: 1
+    }
+  ];
+  
+  // Add Social Security dataset if applicable
+  if (includeSS) {
+    let netWorthDataWithSS = projectionDataWithSS.map(data => data.netWorth);
+    
+    // Extend array if needed
+    if (netWorthDataWithSS.length < maxYears) {
+      const diff = maxYears - netWorthDataWithSS.length;
+      netWorthDataWithSS = [...netWorthDataWithSS, ...Array(diff).fill(0)];
+    }
+    
+    datasets.push({
+      label: 'Net Worth (With Social Security)',
+      data: netWorthDataWithSS,
+      backgroundColor: 'rgba(46, 204, 113, 0.7)',
+      borderColor: 'rgba(46, 204, 113, 1)',
+      borderWidth: 1
+    });
+  }
+  
+  // Add inflation-adjusted dataset
+  datasets.push({
+    label: 'Inflation-Adjusted Value',
+    data: inflationAdjustedData,
+    backgroundColor: 'rgba(255, 107, 107, 0.7)',
+    borderColor: 'rgba(255, 107, 107, 1)',
+    borderWidth: 1,
+    type: 'line'
+  });
+  
+  // Get the depletion year for each scenario for annotation
+  let depletionYearWithoutSS = findDepletionYear(projectionDataWithoutSS);
+  let depletionYearWithSS = includeSS ? findDepletionYear(projectionDataWithSS) : 0;
+  
+  // Create chart
+  const ctx = canvas.getContext('2d');
+  const chart = new Chart(ctx, {
+    type: 'bar',
+    data: {
+      labels: labels,
+      datasets: datasets
+    },
+    options: {
+      responsive: true,
+      maintainAspectRatio: false,
+      plugins: {
+        title: {
+          display: true,
+          text: 'Projected Net Worth Over Time',
+          font: {
+            size: 16
+          }
+        },
+        tooltip: {
+          callbacks: {
+            label: function(context) {
+              let label = context.dataset.label || '';
+              if (label) {
+                label += ': ';
+              }
+              if (context.parsed.y !== null) {
+                label += new Intl.NumberFormat('en-US', {
+                  style: 'currency',
+                  currency: 'USD',
+                  maximumFractionDigits: 0
+                }).format(context.parsed.y);
+              }
+              return label;
+            }
+          }
+        },
+        legend: {
+          position: 'top',
+        }
+      },
+      scales: {
+        x: {
+          grid: {
+            display: false
+          }
+        },
+        y: {
+          ticks: {
+            callback: function(value) {
+              return new Intl.NumberFormat('en-US', {
+                style: 'currency',
+                currency: 'USD',
+                notation: 'compact',
+                compactDisplay: 'short',
+                maximumFractionDigits: 0
+              }).format(value);
+            }
+          }
+        }
+      }
+    }
+  });
+  
+  // Add an insight section below the chart to highlight the difference
+  if (includeSS) {
+    const yearsAddedBySSText = document.createElement('div');
+    yearsAddedBySSText.className = 'ss-chart-insight';
+    yearsAddedBySSText.style.marginTop = '15px';
+    yearsAddedBySSText.style.padding = '10px';
+    yearsAddedBySSText.style.backgroundColor = 'rgba(46, 204, 113, 0.1)';
+    yearsAddedBySSText.style.borderLeft = '4px solid rgba(46, 204, 113, 0.7)';
+    yearsAddedBySSText.style.borderRadius = '0 4px 4px 0';
+    
+    let yearsAdded = 0;
+    let insightText = '';
+    
+    if (depletionYearWithoutSS < depletionYearWithSS) {
+      if (depletionYearWithSS === Infinity) {
+        insightText = `<strong>Impact of Social Security:</strong> Without Social Security, your portfolio would last approximately ${depletionYearWithoutSS} years. With Social Security benefits, your portfolio is projected to last indefinitely.`;
+      } else {
+        yearsAdded = depletionYearWithSS - depletionYearWithoutSS;
+        insightText = `<strong>Impact of Social Security:</strong> Social Security benefits extend your portfolio's longevity by approximately ${yearsAdded.toFixed(1)} years (from ${depletionYearWithoutSS.toFixed(1)} to ${depletionYearWithSS.toFixed(1)} years).`;
+      }
+    } else {
+      insightText = `<strong>Impact of Social Security:</strong> Social Security benefits reduce your required withdrawals, providing additional financial security even though both scenarios show similar portfolio longevity.`;
+    }
+    
+    yearsAddedBySSText.innerHTML = insightText;
+    chartContainer.appendChild(yearsAddedBySSText);
+  }
+}
+
+// Helper function to find the year when net worth depletes
+function findDepletionYear(projectionData) {
+  for (let i = 0; i < projectionData.length; i++) {
+    if (projectionData[i].netWorth <= 0) {
+      return i - 1; // Return the last year with positive net worth
+    }
+  }
+  return Infinity; // If never depletes
+}
+
+// Update the calculateNetWorthProjection function to include Social Security
+function calculateNetWorthProjection(initialNetWorth, annualExpenses, withdrawalRate, nominalReturnRate, inflationRate, years, includeSocialSecurity = false, annualSSBenefit = 0, ssAge = 67, currentAge = 65) {
+  const projectionYears = Math.min(years || 30, 100); // Cap at 100 years max
+  const data = [];
+  
+  let currentNetWorth = initialNetWorth;
+  let originalInvestment = initialNetWorth;
+  let annualWithdrawal = annualExpenses;
+  
+  // Calculate years until Social Security starts
+  const yearsToSS = Math.max(0, ssAge - currentAge);
+  
+  // Populate yearly data
+  for (let year = 0; year <= projectionYears; year++) {
+    // Record data for this year
+    data.push({
+      year: year,
+      netWorth: Math.max(0, currentNetWorth),
+      originalInvestment: originalInvestment,
+      inflationAdjustedNetWorth: Math.max(0, currentNetWorth / Math.pow(1 + inflationRate, year))
+    });
+    
+    // Update values for next year
+    const investmentReturns = currentNetWorth * nominalReturnRate;
+    let withdrawalAmount = annualWithdrawal;
+    
+    // If we're including Social Security and we've reached the claiming age
+    if (includeSocialSecurity && year >= yearsToSS) {
+      // Calculate inflation-adjusted SS benefit for this year
+      const adjustedSSBenefit = annualSSBenefit * Math.pow(1 + inflationRate, year - yearsToSS);
+      
+      // Reduce withdrawal by Social Security amount (but not below zero)
+      withdrawalAmount = Math.max(0, withdrawalAmount - adjustedSSBenefit);
+    }
+    
+    // Calculate next year's net worth
+    currentNetWorth = currentNetWorth + investmentReturns - withdrawalAmount;
+    
+    // Adjust withdrawal for inflation
+    annualWithdrawal = annualWithdrawal * (1 + inflationRate);
+    
+    // Stop if net worth reaches zero
+    if (currentNetWorth <= 0) {
+      // Add one more data point to show the zero balance
+      if (year < projectionYears) {
+        data.push({
+          year: year + 1,
+          netWorth: 0,
+          originalInvestment: originalInvestment,
+          inflationAdjustedNetWorth: 0
+        });
+      }
+      break;
+    }
+  }
+  
+  return data;
+}
+
+// Update the function that is called when the calculate button is clicked
+function updateCalculatorWithChart() {
+  // Get inputs
+  const currentAge = parseFloat(document.getElementById('current-age').value) || 0;
+  const netWorth = parseFloat(document.getElementById('net-worth').value) || 0;
+  const withdrawalRate = parseFloat(document.getElementById('withdrawal-rate').value) / 100;
+  const nominalReturnRate = parseFloat(document.getElementById('return-rate').value) / 100;
+  const inflationRate = parseFloat(document.getElementById('inflation-rate').value) / 100;
+  
+  // Calculate total monthly expenses using the new function
+  const totalMonthlyExpenses = calculateTotalMonthlyExpenses();
+  
+  // Calculate annual expenses
+  const annualExpenses = totalMonthlyExpenses * 12;
+  
+  // Determine whether to use Social Security calculations
+  const includeSS = ssIncludeSelect.value === 'yes';
+  
+  // Calculate how long money will last without Social Security
+  const moneyCalcWithoutSS = calculateMoneyDuration(
+    netWorth,
+    annualExpenses,
+    withdrawalRate,
+    nominalReturnRate,
+    inflationRate
+  );
+  
+  // Calculate how long money will last with Social Security if applicable
+  let moneyCalcWithSS = null;
+  if (includeSS) {
+    const ssCalculation = calculateWithSocialSecurity(
+      netWorth,
+      annualExpenses,
+      withdrawalRate,
+      nominalReturnRate,
+      inflationRate,
+      currentAge
+    );
+    moneyCalcWithSS = ssCalculation.result;
+  }
+  
+ // Determine projection years (use the longer of the two)
+  let projectionYears = moneyCalcWithoutSS.lastsForever ? 30 : moneyCalcWithoutSS.years;
+  
+  if (includeSS && moneyCalcWithSS) {
+    const ssYears = moneyCalcWithSS.lastsForever ? 30 : moneyCalcWithSS.years;
+    projectionYears = Math.max(projectionYears, ssYears);
+  }
+  
+  // Add a buffer to show a bit beyond where money runs out
+  projectionYears = Math.ceil(projectionYears * 1.1);
+  
+  // Create the chart
+  createRetirementChart(
+    netWorth,
+    annualExpenses,
+    withdrawalRate,
+    nominalReturnRate,
+    inflationRate,
+    projectionYears
+  );
+}
+
+// Update chart on calculate button click
+document.addEventListener('DOMContentLoaded', function() {
+  // Get original button
+  const calculateBtn = document.getElementById('calculate-btn');
+  
+  // Store original click handler
+  const originalClickHandler = calculateBtn.onclick;
+  
+  // Replace with new handler that calls original + adds chart
+  calculateBtn.onclick = function(event) {
+    // If there was an original handler, call it first
+    if (originalClickHandler) {
+      originalClickHandler.call(this, event);
+    } else {
+      // Otherwise, just run the default calculation code
+    }
+    
+    // Then add our chart update
+    updateCalculatorWithChart();
+  };
+});
+
+// Toggle Social Security input fields based on selected method
+ssMethodSelect.addEventListener('change', () => {
+    if (ssMethodSelect.value === 'statement') {
+        ssStatementFields.style.display = 'block';
+        ssEstimateFields.style.display = 'none';
+    } else {
+        ssStatementFields.style.display = 'none';
+        ssEstimateFields.style.display = 'block';
+    }
+});
+
+// Toggle spouse fields
+includeSpouse.addEventListener('change', () => {
+    if (includeSpouse.value === 'yes') {
+        spouseSSFields.style.display = 'block';
+    } else {
+        spouseSSFields.style.display = 'none';
+    }
+});
+
+// Toggle all Social Security fields
+ssIncludeSelect.addEventListener('change', () => {
+    const containers = document.querySelectorAll('#ss-method-container, #ss-statement-fields, #ss-estimate-fields, .spouse-ss-section');
+    if (ssIncludeSelect.value === 'yes') {
+        containers.forEach(container => container.style.display = 'block');
+        // Make sure the correct estimation method is shown
+        ssMethodSelect.dispatchEvent(new Event('change'));
+    } else {
+        containers.forEach(container => container.style.display = 'none');
+    }
+});
+
+// UPDATED: Modified event listeners to update strategy chart when inputs change
+ssMonthlyBenefit.addEventListener('input', function() {
+    updateBenefitTable();
+    
+    // Add call to update the strategy chart when monthly benefit changes
+    if (this.value && parseFloat(this.value) > 0) {
+        updateSSStrategyChart();
+    }
+});
+
+ssClaimingAge.addEventListener('change', function() {
+    updateBenefitTable();
+    
+    // Add call to update the strategy chart when claiming age changes
+    updateSSStrategyChart();
+});
+
+// Calculate Social Security benefit estimates when the Monthly Benefit or Claiming Age changes
+function updateBenefitTable() {
+    const monthlyBenefit = parseFloat(ssMonthlyBenefit.value) || 0;
+    if (monthlyBenefit <= 0) {
+        ssBenefitTable.style.display = 'none';
+        return;
+    }
+    
+    ssBenefitTable.style.display = 'block';
+    ssBenefitTableBody.innerHTML = '';
+    
+    // Calculate benefits at different ages
+    for (let age = 62; age <= 70; age++) {
+        const row = document.createElement('tr');
+        
+        // Determine percentage of full benefit
+        let percentOfFull = 100;
+        if (age < 67) { // Before FRA
+            percentOfFull = 100 - ((67 - age) * 6.67); // Approximately 6.67% reduction per year
+        } else if (age > 67) { // After FRA
+            percentOfFull = 100 + ((age - 67) * 8); // 8% increase per year
+        }
+        
+        const adjustedBenefit = Math.round(monthlyBenefit * percentOfFull / 100);
+        
+        row.innerHTML = `
+            <td>${age}</td>
+            <td>${adjustedBenefit.toLocaleString()}</td>
+            <td>${percentOfFull.toFixed(1)}%</td>
+        `;
+        
+        if (parseInt(ssClaimingAge.value) === age) {
+            row.classList.add('selected-age');
+        }
+        
+        ssBenefitTableBody.appendChild(row);
+    }
+}
+
+// Calculate rough Social Security estimate based on birth year and income
+ssCalculateBtn.addEventListener('click', () => {
+    const birthYear = parseInt(ssBirthYear.value) || 1965;
+    const yearsWorked = parseInt(ssYearsWorked.value) || 35;
+    const avgIncome = parseFloat(ssAvgIncome.value) || 0;
+    
+    // Determine Full Retirement Age (FRA) based on birth year
+    let fra = 67; // Default for most current workers
+    if (birthYear <= 1937) {
+        fra = 65;
+    } else if (birthYear <= 1942) {
+        fra = 65 + (birthYear - 1937) * 2 / 12;
+    } else if (birthYear <= 1954) {
+        fra = 66;
+    } else if (birthYear <= 1959) {
+        fra = 66 + (birthYear - 1954) * 2 / 12;
+    }
+    
+    // Calculate AIME (Average Indexed Monthly Earnings) - simplified
+    const aime = avgIncome / 12;
+    
+    // Apply bend points for PIA (Primary Insurance Amount) calculation - simplified
+    // These bend points change annually with inflation
+    let pia = 0;
+    if (aime <= 996) {
+        pia = aime * 0.9;
+    } else if (aime <= 6002) {
+        pia = 896.4 + (aime - 996) * 0.32;
+    } else {
+        pia = 2501.82 + (aime - 6002) * 0.15;
+    }
+    
+    // Adjust for years worked (if less than 35)
+    if (yearsWorked < 35) {
+        pia = pia * (yearsWorked / 35);
+    }
+    
+    // Round to nearest dollar
+    pia = Math.round(pia);
+    
+    // Update the monthly benefit field with our estimate
+    ssMonthlyBenefit.value = pia;
+    
+    // Switch to statement view to show the table
+    ssMethodSelect.value = 'statement';
+    ssMethodSelect.dispatchEvent(new Event('change'));
+    
+    // Update the benefit table
+    updateBenefitTable();
+});
+
+// Function to calculate Social Security benefit based on claiming age
+function calculateSSBenefit(fraBenefit, claimingAge) {
+    let percentOfFull = 100;
+    if (claimingAge < 67) { // Before FRA
+        percentOfFull = 100 - ((67 - claimingAge) * 6.67); // Approximately 6.67% reduction per year
+    } else if (claimingAge > 67) { // After FRA
+        percentOfFull = 100 + ((claimingAge - 67) * 8); // 8% increase per year
+    }
+    
+    return (fraBenefit * percentOfFull / 100);
+}
+
+// Function to include Social Security in retirement calculations
+function calculateWithSocialSecurity(netWorth, annualExpenses, withdrawalRate, nominalReturnRate, inflationRate, currentAge) {
+    // Check if Social Security is included
+    if (ssIncludeSelect.value !== 'yes') {
+        return {
+            usesSocialSecurity: false,
+            result: calculateMoneyDuration(netWorth, annualExpenses, withdrawalRate, nominalReturnRate, inflationRate)
+        };
+    }
+    
+    // Get Social Security information
+    const fraBenefit = parseFloat(ssMonthlyBenefit.value) || 0;
+    const claimingAge = parseInt(ssClaimingAge.value) || 67;
+    const monthlyBenefit = calculateSSBenefit(fraBenefit, claimingAge);
+    
+    // Get spouse information if included
+    let spouseMonthlyAmount = 0;
+    let spouseAge = 0;
+    if (includeSpouse.value === 'yes') {
+        const spouseFraBenefit = parseFloat(spouseMonthlyBenefit.value) || 0;
+        const spouseAge = parseInt(spouseClaimingAge.value) || 67;
+        spouseMonthlyAmount = calculateSSBenefit(spouseFraBenefit, spouseAge);
+    }
+    
+    // Convert to annual amounts
+    const annualBenefit = monthlyBenefit * 12;
+    const spouseAnnualBenefit = spouseMonthlyAmount * 12;
+    const totalAnnualBenefit = annualBenefit + spouseAnnualBenefit;
+    
+    // Calculate SS coverage percentage
+    const ssCoveragePercent = Math.min(100, (totalAnnualBenefit / annualExpenses * 100));
+    
+    // Calculate how many years until claiming
+    const yearsToSS = Math.max(0, claimingAge - currentAge);
+    
+    // First calculate without SS until claiming age
+    let currentBalance = netWorth;
+    let years = 0;
+    
+    // Phase 1: Before Social Security
+    while (currentBalance > 0 && years < yearsToSS) {
+        const investmentReturns = currentBalance * nominalReturnRate;
+        const withdrawalAmount = annualExpenses * Math.pow(1 + inflationRate, years);
+        
+        currentBalance = currentBalance + investmentReturns - withdrawalAmount;
+        years++;
+    }
+    
+    // If money ran out before SS starts, return the result
+    if (currentBalance <= 0) {
+        return {
+            usesSocialSecurity: true,
+            result: { lastsForever: false, years: years, realReturnRate: (1 + nominalReturnRate) / (1 + inflationRate) - 1 },
+            ssBenefit: totalAnnualBenefit,
+            coveragePercent: ssCoveragePercent,
+            yearsToSS: yearsToSS
+        };
+    }
+    
+    // Phase 2: After Social Security starts (reduced withdrawals)
+    const maxYears = 200;
+    let currentWithdrawal = annualExpenses;
+    let currentSSBenefit = totalAnnualBenefit;
+    
+    while (currentBalance > 0 && years < maxYears) {
+        // Apply inflation to expenses and Social Security (SS has COLA adjustments)
+        currentWithdrawal = annualExpenses * Math.pow(1 + inflationRate, years);
+        currentSSBenefit = totalAnnualBenefit * Math.pow(1 + inflationRate, years - yearsToSS);
+        
+        // Net withdrawal needed after Social Security
+        const netWithdrawal = Math.max(0, currentWithdrawal - currentSSBenefit);
+        
+        const investmentReturns = currentBalance * nominalReturnRate;
+        currentBalance = currentBalance + investmentReturns - netWithdrawal;
+        
+        years++;
+    }
+    
+    return {
+        usesSocialSecurity: true,
+        result: {
+            lastsForever: years >= maxYears,
+            years: years,
+            realReturnRate: (1 + nominalReturnRate) / (1 + inflationRate) - 1
+        },
+        ssBenefit: totalAnnualBenefit,
+        coveragePercent: ssCoveragePercent,
+        yearsToSS: yearsToSS
+    };
+}
+// NEW FUNCTION: Added to update the SS strategy chart in the input section
+function updateSSStrategyChart() {
+    // Only proceed if we have the necessary inputs
+    const fraBenefit = parseFloat(ssMonthlyBenefit.value) || 0;
+    if (fraBenefit <= 0) {
+        document.getElementById('ss-strategy-comparison-input').style.display = 'none';
+        return;
+    }
+    
+    document.getElementById('ss-strategy-comparison-input').style.display = 'block';
+    
+    const currentAge = parseFloat(document.getElementById('current-age').value) || 0;
+    // Use reasonable defaults if other fields aren't filled in yet
+    const netWorth = parseFloat(document.getElementById('net-worth').value) || 1000000;
+    
+    // Get total monthly expenses using our new function
+    const totalMonthlyExpenses = calculateTotalMonthlyExpenses();
+    
+    // If expenses aren't filled in, use a reasonable default
+    const annualExpenses = totalMonthlyExpenses > 0 ? totalMonthlyExpenses * 12 : 50000;
+    
+    // Use default values from sliders for rates
+    const withdrawalRate = parseFloat(withdrawalRateSlider.value) / 100;
+    const nominalReturnRate = parseFloat(returnRateSlider.value) / 100;
+    const inflationRate = parseFloat(inflationRateSlider.value) / 100;
+    
+    // Create the chart in the input section
+    createSSStrategyChart(
+        fraBenefit,
+        currentAge,
+        netWorth,
+        annualExpenses,
+        withdrawalRate,
+        nominalReturnRate,
+        inflationRate,
+        'ss-strategy-chart-input' // Pass the ID of the new container
+    );
+}
+
+// UPDATED: Modified to accept a container ID parameter
+function createSSStrategyChart(fraBenefit, currentAge, currentNetWorth, annualExpenses, withdrawalRate, nominalReturnRate, inflationRate, containerId = 'ss-strategy-chart') {
+    // Clear existing chart
+    const chartContainer = document.getElementById(containerId);
+    chartContainer.innerHTML = '';
+    
+    // Create canvas
+    const canvas = document.createElement('canvas');
+    canvas.id = containerId + '-canvas';
+    chartContainer.appendChild(canvas);
+    
+    // Calculate longevity for different claiming ages
+    const strategies = [];
+    
+    for (let claimingAge = 62; claimingAge <= 70; claimingAge++) {
+        // Calculate monthly benefit at this claiming age
+        const monthlyBenefit = calculateSSBenefit(fraBenefit, claimingAge);
+        const annualBenefit = monthlyBenefit * 12;
+        
+        // Get how many years money will last
+        const yearsToSS = Math.max(0, claimingAge - currentAge);
+        let currentBalance = currentNetWorth;
+        let years = 0;
+        
+        // Phase 1: Before Social Security
+        while (currentBalance > 0 && years < yearsToSS) {
+            const investmentReturns = currentBalance * nominalReturnRate;
+            const withdrawalAmount = annualExpenses * Math.pow(1 + inflationRate, years);
+            
+            currentBalance = currentBalance + investmentReturns - withdrawalAmount;
+            years++;
+        }
+        
+        // If money ran out before SS starts
+        if (currentBalance <= 0) {
+            strategies.push({
+                age: claimingAge,
+                benefit: monthlyBenefit,
+                coverage: annualBenefit / annualExpenses * 100,
+                years: years,
+                lastsForever: false
+            });
+            continue;
+        }
+        
+        // Phase 2: After Social Security starts
+        const maxYears = 200;
+        
+        while (currentBalance > 0 && years < maxYears) {
+            const currentWithdrawal = annualExpenses * Math.pow(1 + inflationRate, years);
+            const currentSSBenefit = annualBenefit * Math.pow(1 + inflationRate, years - yearsToSS);
+            
+            const netWithdrawal = Math.max(0, currentWithdrawal - currentSSBenefit);
+            
+            const investmentReturns = currentBalance * nominalReturnRate;
+            currentBalance = currentBalance + investmentReturns - netWithdrawal;
+            
+            years++;
+        }
+        
+        strategies.push({
+            age: claimingAge,
+            benefit: monthlyBenefit,
+            coverage: annualBenefit / annualExpenses * 100,
+            years: years,
+            lastsForever: years >= maxYears
+        });
+    }
+    
+    // Prepare chart data
+    const labels = strategies.map(s => `Age ${s.age}`);
+    const yearData = strategies.map(s => s.lastsForever ? 50 : Math.min(50, s.years));
+    const benefitData = strategies.map(s => s.benefit);
+    
+    // Create chart
+    const ctx = canvas.getContext('2d');
+    new Chart(ctx, {
+        type: 'bar',
+        data: {
+            labels: labels,
+            datasets: [
+                {
+                    label: 'Portfolio Longevity (Years)',
+                    data: yearData,
+                    backgroundColor: 'rgba(58, 110, 165, 0.7)',
+                    borderColor: 'rgba(58, 110, 165, 1)',
+                    borderWidth: 1,
+                    yAxisID: 'y'
+                },
+                {
+                    label: 'Monthly Benefit ($)',
+                    data: benefitData,
+                    type: 'line',
+                    borderColor: 'rgba(255, 107, 107, 1)',
+                    backgroundColor: 'rgba(255, 107, 107, 0.1)',
+                    borderWidth: 2,
+                    yAxisID: 'y1'
+                }
+            ]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            scales: {
+                y: {
+                    type: 'linear',
+                    position: 'left',
+                    title: {
+                        display: true,
+                        text: 'Years'
+                    },
+                    ticks: {
+                        callback: function(value) {
+                            return value === 50 ? '50+ years' : value;
+                        }
+                    }
+                },
+                y1: {
+                    type: 'linear',
+                    position: 'right',
+                    title: {
+                        display: true,
+                        text: 'Monthly Benefit ($)'
+                    },
+                    grid: {
+                        drawOnChartArea: false
+                    }
+                }
+            },
+            plugins: {
+                tooltip: {
+                    callbacks: {
+                        label: function(context) {
+                            const index = context.dataIndex;
+                            const datasetIndex = context.datasetIndex;
+                            
+                            if (datasetIndex === 0) {
+                                const strategy = strategies[index];
+                                if (strategy.lastsForever) {
+                                    return 'Portfolio lasts indefinitely';
+                                } else {
+                                    return `Portfolio lasts ${strategy.years.toFixed(1)} years`;
+                                }
+                            } else {
+                                return `Monthly benefit: $${benefitData[index].toLocaleString()}`;
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    });
+}
+
+// UPDATED: Modified to no longer include strategy chart in results
+const originalCalculateBtnHandler = calculateBtn.onclick;
+calculateBtn.onclick = function() {
+    if (originalCalculateBtnHandler) {
+        originalCalculateBtnHandler.call.call(this);
+    } else {
+        // Otherwise, just run the default calculation code
+    }
+    
+    // Get base inputs
+    const currentAge = parseFloat(document.getElementById('current-age').value) || 0;
+    const netWorth = parseFloat(document.getElementById('net-worth').value) || 0;
+    const withdrawalRate = parseFloat(withdrawalRateSlider.value) / 100;
+    const nominalReturnRate = parseFloat(returnRateSlider.value) / 100;
+    const inflationRate = parseFloat(inflationRateSlider.value) / 100;
+    
+    // Calculate total monthly expenses using our new function
+    const totalMonthlyExpenses = calculateTotalMonthlyExpenses();
+    
+    // Calculate annual expenses
+    const annualExpenses = totalMonthlyExpenses * 12;
+    
+    // Calculate with Social Security
+    const calculationWithSS = calculateWithSocialSecurity(
+        netWorth, 
+        annualExpenses, 
+        withdrawalRate, 
+        nominalReturnRate, 
+        inflationRate,
+        currentAge
+    );
+    
+    // If Social Security is included, update the displays
+    if (calculationWithSS.usesSocialSecurity) {
+        // Show Social Security coverage
+        document.getElementById('ss-coverage-percent').textContent = `${calculationWithSS.coveragePercent.toFixed(1)}%`;
+        
+        // Update the money lasting text
+        const ageAtDepletion = currentAge + calculationWithSS.result.years;
+        let moneyLastingText = '';
+        
+        if (calculationWithSS.result.lastsForever) {
+            moneyLastingText = `With Social Security benefits starting at age ${ssClaimingAge.value} covering ${calculationWithSS.coveragePercent.toFixed(1)}% of your expenses, your portfolio should last indefinitely. The combination of your investments and Social Security provides sustainable retirement income.`;
+        } else {
+            moneyLastingText = `With Social Security benefits starting at age ${ssClaimingAge.value}, your portfolio will last approximately <strong>${calculationWithSS.result.years.toFixed(1)} years</strong> (until age ${ageAtDepletion.toFixed(0)}). Social Security covers ${calculationWithSS.coveragePercent.toFixed(1)}% of your expenses, reducing the withdrawal pressure on your investments.`;
+        }
+        
+        document.getElementById('money-lasting').innerHTML = moneyLastingText;
+        
+        // Show the Social Security impact section
+        const ssImpactSection = document.getElementById('ss-impact-section');
+        ssImpactSection.style.display = 'block';
+        
+        // Calculate the difference with and without Social Security
+        const calculationWithoutSS = calculateMoneyDuration(
+            netWorth, 
+            annualExpenses, 
+            withdrawalRate, 
+            nominalReturnRate, 
+            inflationRate
+        );
+        
+        let yearsAdded = 0;
+        if (!calculationWithoutSS.lastsForever && !calculationWithSS.result.lastsForever) {
+            yearsAdded = calculationWithSS.result.years - calculationWithoutSS.years;
+        } else if (!calculationWithoutSS.lastsForever && calculationWithSS.result.lastsForever) {
+            yearsAdded = "infinite";
+        }
+        
+        const fraBenefit = parseFloat(ssMonthlyBenefit.value) || 0;
+        const monthlyBenefit = calculateSSBenefit(fraBenefit, parseInt(ssClaimingAge.value));
+
+        // Get spouse's benefit information if included
+        let spouseText = "";
+        let totalMonthlyBenefit = monthlyBenefit;
+
+        if (includeSpouse.value === 'yes') {
+            const spouseFraBenefit = parseFloat(spouseMonthlyBenefit.value) || 0;
+            const spouseAge = parseInt(spouseClaimingAge.value);
+            const spouseMonthlyAmount = calculateSSBenefit(spouseFraBenefit, spouseAge);
+            
+            // Add spouse's benefit to total
+            totalMonthlyBenefit += spouseMonthlyAmount;
+            
+            // Create text about spouse's benefit
+            spouseText = `
+                <br>
+                <strong>Spouse's Monthly Benefit:</strong> ${formatCurrency(spouseMonthlyAmount)}/month (${formatCurrency(spouseMonthlyAmount * 12)}/year) starting at age ${spouseAge}
+                <br>
+                <strong>Combined Monthly Benefit:</strong> ${formatCurrency(totalMonthlyBenefit)}/month (${formatCurrency(totalMonthlyBenefit * 12)}/year)
+            `;
+        }
+
+        let impactText = `
+            <strong>Monthly Social Security Benefit:</strong> ${formatCurrency(monthlyBenefit)}/month (${formatCurrency(monthlyBenefit * 12)}/year) starting at age ${ssClaimingAge.value}
+            ${spouseText}
+            <br><br>
+            <strong>Portfolio Impact:</strong> Social Security `;
+            
+        if (yearsAdded === "infinite") {
+            impactText += `makes your portfolio last indefinitely, compared to ${calculationWithoutSS.years.toFixed(1)} years without it.`;
+        } else if (yearsAdded > 0) {
+            impactText += `adds approximately ${yearsAdded.toFixed(1)} years to your portfolio's longevity.`;
+        } else {
+            impactText += `doesn't significantly extend your portfolio's longevity, but it reduces your required withdrawals.`;
+        }
+        
+        if (calculationWithSS.coveragePercent >= 50) {
+            impactText += ` With Social Security covering ${calculationWithSS.coveragePercent.toFixed(1)}% of your expenses, your financial security in retirement is significantly enhanced.`;
+        }
+        
+        document.getElementById('ss-impact-text').innerHTML = impactText;
+        
+        // No longer creating the strategy chart here since it's in the input section
+    } else {
+        // Hide the Social Security sections if not included
+        document.getElementById('ss-impact-section').style.display = 'none';
+    }
+    
+    // Make sure results are showing
+    document.getElementById('results').style.display = 'block';
+};
+
+// NEW: Add initialization code to hook up the strategy chart when the page loads
+document.addEventListener('DOMContentLoaded', function() {
+    // Wire up the event that shows/hides the Social Security method options
+    ssIncludeSelect.addEventListener('change', function() {
+        const containers = document.querySelectorAll('#ss-method-container, #ss-statement-fields, #ss-estimate-fields, .spouse-ss-section');
+        if (this.value === 'yes') {
+            containers.forEach(container => container.style.display = 'block');
+            // Make sure the correct estimation method is shown
+            ssMethodSelect.dispatchEvent(new Event('change'));
+            
+            // Initialize the strategy chart if benefit amount is available
+            if (ssMonthlyBenefit.value && parseFloat(ssMonthlyBenefit.value) > 0) {
+                updateSSStrategyChart();
+            } else {
+                document.getElementById('ss-strategy-comparison-input').style.display = 'none';
+            }
+        } else {
+            containers.forEach(container => container.style.display = 'none');
+        }
+    });
+    
+    // Add current age field change listener to update strategy chart
+    document.getElementById('current-age').addEventListener('input', function() {
+        if (ssIncludeSelect.value === 'yes' && ssMonthlyBenefit.value && parseFloat(ssMonthlyBenefit.value) > 0) {
+            updateSSStrategyChart();
+        }
+    });
+    
+    // Initialize the strategy chart when the page loads if Social Security is included
+    if (ssIncludeSelect.value === 'yes' && ssMonthlyBenefit.value && parseFloat(ssMonthlyBenefit.value) > 0) {
+        updateSSStrategyChart();
+    } else {
+        document.getElementById('ss-strategy-comparison-input').style.display = 'none';
+    }
+});
+
+/****** TAX BRACKET ESTIMATION ******/
+
+// 2023 Tax Brackets
+const taxBrackets2023 = {
+    single: [
+        { rate: 0.10, bracket: 0 },
+        { rate: 0.12, bracket: 11000 },
+        { rate: 0.22, bracket: 44725 },
+        { rate: 0.24, bracket: 95375 },
+        { rate: 0.32, bracket: 182100 },
+        { rate: 0.35, bracket: 231250 },
+        { rate: 0.37, bracket: 578125 }
+    ],
+    married: [
+        { rate: 0.10, bracket: 0 },
+        { rate: 0.12, bracket: 22000 },
+        { rate: 0.22, bracket: 89450 },
+        { rate: 0.24, bracket: 190750 },
+        { rate: 0.32, bracket: 364200 },
+        { rate: 0.35, bracket: 462500 },
+        { rate: 0.37, bracket: 693750 }
+    ],
+    head: [
+        { rate: 0.10, bracket: 0 },
+        { rate: 0.12, bracket: 15700 },
+        { rate: 0.22, bracket: 59850 },
+        { rate: 0.24, bracket: 95350 },
+        { rate: 0.32, bracket: 182100 },
+        { rate: 0.35, bracket: 231250 },
+        { rate: 0.37, bracket: 578100 }
+    ],
+    separate: [
+        { rate: 0.10, bracket: 0 },
+        { rate: 0.12, bracket: 11000 },
+        { rate: 0.22, bracket: 44725 },
+        { rate: 0.24, bracket: 95375 },
+        { rate: 0.32, bracket: 182100 },
+        { rate: 0.35, bracket: 231250 },
+        { rate: 0.37, bracket: 346875 }
+    ]
+};
+
+// Standard Deductions for 2023
+const standardDeductions2023 = {
+    single: 13850,
+    married: 27700,
+    head: 20800,
+    separate: 13850
+};
+
+// Percentage of Social Security that is taxable at different income levels
+function getTaxableSocialSecurityPercentage(combinedIncome, filingStatus) {
+    // Combined income = AGI + Nontaxable interest + 1/2 of Social Security
+    // For simplicity, we'll just use AGI + 1/2 of Social Security
+    
+    if (filingStatus === 'married') {
+        if (combinedIncome < 32000) {
+            return 0;
+        } else if (combinedIncome < 44000) {
+            return 0.5;
+        } else {
+            return 0.85;
+        }
+    } else {
+        // Single, Head of Household, or Married Filing Separately
+        if (combinedIncome < 25000) {
+            return 0;
+        } else if (combinedIncome < 34000) {
+            return 0.5;
+        } else {
+            return 0.85;
+        }
+    }
+}
+
+// Function to calculate federal income tax
+function calculateFederalTax(taxableIncome, filingStatus) {
+    const brackets = taxBrackets2023[filingStatus];
+    let tax = 0;
+    let bracketData = [];
+    
+    // Calculate tax for each bracket
+    for (let i = 0; i < brackets.length; i++) {
+        const currentBracket = brackets[i];
+        const nextBracketThreshold = (i < brackets.length - 1) ? brackets[i + 1].bracket : Infinity;
+        
+        // Calculate income in this bracket
+        const incomeInBracket = Math.min(
+            Math.max(0, taxableIncome - currentBracket.bracket),
+            nextBracketThreshold - currentBracket.bracket
+        );
+        
+        // Calculate tax for this bracket
+        const taxInBracket = incomeInBracket * currentBracket.rate;
+        tax += taxInBracket;
+        
+        // Store data for visualization
+        if (incomeInBracket > 0) {
+            bracketData.push({
+                rate: currentBracket.rate,
+                incomeInBracket: incomeInBracket,
+                taxInBracket: taxInBracket
+            });
+        }
+    }
+    
+    return {
+        totalTax: tax,
+        bracketData: bracketData,
+        marginalRate: getMarginalRate(taxableIncome, brackets)
+    };
+}
+
+// Function to get the marginal tax rate
+function getMarginalRate(taxableIncome, brackets) {
+    for (let i = brackets.length - 1; i >= 0; i--) {
+        if (taxableIncome >= brackets[i].bracket) {
+            return brackets[i].rate;
+        }
+    }
+    return 0;
+}
+
+// Create the tax bracket visualization chart
+function createTaxBracketChart(incomeBreakdown, taxBreakdown, filingStatus) {
+    // First, completely clear the chart container
+    const chartContainer = document.getElementById('tax-strategy-chart-container');
+    chartContainer.innerHTML = '';
+    
+    // Reset all styles to ensure consistency on recalculation
+    chartContainer.style = '';
+    chartContainer.style.minHeight = '600px';
+    chartContainer.style.width = '100%';
+    chartContainer.style.maxWidth = '100%';
+    chartContainer.style.boxSizing = 'border-box';
+    chartContainer.style.overflow = 'hidden'; // Prevent any overflow issues
+    
+    // Create first chart (main summary)
+    const chartDiv = document.createElement('div');
+    chartDiv.style.height = '300px';
+    chartDiv.style.marginBottom = '30px';
+    chartDiv.style.position = 'relative';
+    chartDiv.style.width = '100%';
+    chartDiv.style.boxSizing = 'border-box';
+    chartContainer.appendChild(chartDiv);
+    
+    const canvas = document.createElement('canvas');
+    canvas.id = 'tax-strategy-chart';
+    chartDiv.appendChild(canvas);
+    
+    // Create datasets for income types
+    const incomeLabels = [];
+    const incomeData = [];
+    const incomeColors = [
+        'rgba(58, 110, 165, 0.7)',  // Social Security
+        'rgba(46, 204, 113, 0.7)',  // Pension
+        'rgba(155, 89, 182, 0.7)',  // Traditional IRA
+        'rgba(52, 152, 219, 0.7)',  // Roth IRA
+        'rgba(241, 196, 15, 0.7)',  // Investment Income
+        'rgba(230, 126, 34, 0.7)',  // Rental Income
+        'rgba(231, 76, 60, 0.7)'    // Other Income
+    ];
+    
+    // Extract data for income chart
+    for (const source of incomeBreakdown) {
+        if (source.amount > 0) {
+            incomeLabels.push(source.name);
+            incomeData.push(source.amount);
+        }
+    }
+    
+    // Create datasets for tax brackets
+    const taxLabels = [];
+    const taxRateData = [];
+    const taxAmountData = [];
+    const taxBracketColors = [];
+    
+    // Generate colors for tax brackets based on rates
+    for (const bracket of taxBreakdown) {
+        taxLabels.push(`${(bracket.rate * 100).toFixed(0)}%`);
+        taxRateData.push(bracket.incomeInBracket);
+        taxAmountData.push(bracket.taxInBracket);
+        
+        // Color based on tax rate (darker for higher rates)
+        const intensity = Math.min(255, 100 + bracket.rate * 400);
+        taxBracketColors.push(`rgba(${intensity}, ${255 - intensity}, 50, 0.7)`);
+    }
+    
+    // Create combo chart with income sources and tax brackets
+    const ctx = canvas.getContext('2d');
+    new Chart(ctx, {
+        type: 'bar',
+        data: {
+            labels: ['Income Sources', 'Tax Brackets'],
+            datasets: [
+                {
+                    label: 'Income Sources',
+                    data: [incomeData.reduce((sum, val) => sum + val, 0), null],
+                    backgroundColor: 'rgba(58, 110, 165, 0.5)',
+                    borderColor: 'rgba(58, 110, 165, 1)',
+                    borderWidth: 1
+                },
+                {
+                    label: 'Taxable Income',
+                    data: [null, taxRateData.reduce((sum, val) => sum + val, 0)],
+                    backgroundColor: 'rgba(46, 204, 113, 0.5)',
+                    borderColor: 'rgba(46, 204, 113, 1)',
+                    borderWidth: 1
+                },
+                {
+                    label: 'Tax Amount',
+                    data: [null, taxAmountData.reduce((sum, val) => sum + val, 0)],
+                    backgroundColor: 'rgba(231, 76, 60, 0.7)',
+                    borderColor: 'rgba(231, 76, 60, 1)',
+                    borderWidth: 1
+                }
+            ]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            scales: {
+                y: {
+                    beginAtZero: true,
+                    ticks: {
+                        callback: function(value) {
+                            return new Intl.NumberFormat('en-US', {
+                                style: 'currency',
+                                currency: 'USD',
+                                notation: 'compact',
+                                compactDisplay: 'short',
+                                maximumFractionDigits: 0
+                            }).format(value);
+                        }
+                    }
+                }
+            },
+            plugins: {
+                tooltip: {
+                    callbacks: {
+                        label: function(context) {
+                            let label = context.dataset.label || '';
+                            if (label) {
+                                label += ': ';
+                            }
+                            if (context.parsed.y !== null) {
+                                label += new Intl.NumberFormat('en-US', {
+                                    style: 'currency',
+                                    currency: 'USD',
+                                    maximumFractionDigits: 0
+                                }).format(context.parsed.y);
+                            }
+                            return label;
+                        }
+                    }
+                },
+                legend: {
+                    position: 'top'
+                },
+                title: {
+                    display: true,
+                    text: `Retirement Income and Tax Breakdown (${filingStatus.charAt(0).toUpperCase() + filingStatus.slice(1)} Filing Status)`,
+                    font: {
+                        size: 16
+                    }
+                }
+            }
+        }
+    });
+    
+    // Create a flex container with explicit constraints
+    const flexContainer = document.createElement('div');
+    flexContainer.style.display = 'flex';
+    flexContainer.style.flexDirection = 'row';
+    flexContainer.style.flexWrap = 'nowrap'; // Prevent wrapping
+    flexContainer.style.justifyContent = 'space-between';
+    flexContainer.style.alignItems = 'stretch';
+    flexContainer.style.marginBottom = '40px';
+    flexContainer.style.width = '100%';
+    flexContainer.style.maxWidth = '100%';
+    flexContainer.style.boxSizing = 'border-box';
+    chartContainer.appendChild(flexContainer);
+    
+    // Left chart container with fixed constraints
+    const incomeDetailsContainer = document.createElement('div');
+    incomeDetailsContainer.style.width = 'calc(50% - 10px)'; // Use calc for precise width
+    incomeDetailsContainer.style.flexGrow = '0';
+    incomeDetailsContainer.style.flexShrink = '0';
+    incomeDetailsContainer.style.height = '250px';
+    incomeDetailsContainer.style.position = 'relative';
+    incomeDetailsContainer.style.boxSizing = 'border-box';
+    flexContainer.appendChild(incomeDetailsContainer);
+    
+    const incomeDetailsCanvas = document.createElement('canvas');
+    incomeDetailsCanvas.id = 'income-details-chart';
+    incomeDetailsContainer.appendChild(incomeDetailsCanvas);
+    
+    const incomeDetailsCtx = incomeDetailsCanvas.getContext('2d');
+    new Chart(incomeDetailsCtx, {
+        type: 'doughnut',
+        data: {
+            labels: incomeLabels,
+            datasets: [{
+                data: incomeData,
+                backgroundColor: incomeColors.slice(0, incomeLabels.length),
+                borderWidth: 1
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: {
+                tooltip: {
+                    callbacks: {
+                        label: function(context) {
+                            let label = context.label || '';
+                            if (label) {
+                                label += ': ';
+                            }
+                            label += new Intl.NumberFormat('en-US', {
+                                style: 'currency',
+                                currency: 'USD',
+                                maximumFractionDigits: 0
+                            }).format(context.raw);
+                            return label;
+                        }
+                    }
+                },
+                title: {
+                    display: true,
+                    text: 'Income Sources Breakdown',
+                    font: {
+                        size: 14
+                    }
+                }
+            }
+        }
+    });
+    
+    // Right chart container with fixed constraints
+    const taxDetailsContainer = document.createElement('div');
+    taxDetailsContainer.style.width = 'calc(50% - 10px)'; // Use calc for precise width
+    taxDetailsContainer.style.flexGrow = '0';
+    taxDetailsContainer.style.flexShrink = '0';
+    taxDetailsContainer.style.height = '250px';
+    taxDetailsContainer.style.position = 'relative';
+    taxDetailsContainer.style.boxSizing = 'border-box';
+    flexContainer.appendChild(taxDetailsContainer);
+    
+    const taxDetailsCanvas = document.createElement('canvas');
+    taxDetailsCanvas.id = 'tax-details-chart';
+    taxDetailsContainer.appendChild(taxDetailsCanvas);
+    
+    const taxDetailsCtx = taxDetailsCanvas.getContext('2d');
+    new Chart(taxDetailsCtx, {
+        type: 'pie',
+        data: {
+            labels: taxLabels,
+            datasets: [{
+                data: taxAmountData,
+                backgroundColor: taxBracketColors,
+                borderWidth: 1
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: {
+                tooltip: {
+                    callbacks: {
+                        label: function(context) {
+                            let label = context.label || '';
+                            if (label) {
+                                label += ' bracket: ';
+                            }
+                            label += new Intl.NumberFormat('en-US', {
+                                style: 'currency',
+                                currency: 'USD',
+                                maximumFractionDigits: 0
+                            }).format(context.raw);
+                            return label;
+                        }
+                    }
+                },
+                title: {
+                    display: true,
+                    text: 'Tax by Bracket',
+                    font: {
+                        size: 14
+                    }
+                }
+            }
+        }
+    });
+    
+    // Add final spacer for extra padding
+    const spacerDiv = document.createElement('div');
+    spacerDiv.style.height = '20px';
+    spacerDiv.style.width = '100%';
+    spacerDiv.style.clear = 'both'; // Ensure proper clearing
+    chartContainer.appendChild(spacerDiv);
+}
+
+// Main function to calculate tax bracket
+function calculateTaxBracket() {
+    // Get filing status
+    const filingStatus = document.getElementById('tax-filing-status').value;
+    const deductionType = document.getElementById('tax-deduction-type').value;
+    
+    // Get income values
+    const socialSecurity = parseFloat(document.getElementById('tax-social-security').value) || 0;
+    const pension = parseFloat(document.getElementById('tax-pension').value) || 0;
+    const traditionalIRA = parseFloat(document.getElementById('tax-traditional-ira').value) || 0;
+    const rothIRA = parseFloat(document.getElementById('tax-roth').value) || 0;
+    const investments = parseFloat(document.getElementById('tax-investments').value) || 0;
+    const rental = parseFloat(document.getElementById('tax-rental').value) || 0;
+    const otherIncome = parseFloat(document.getElementById('tax-other').value) || 0;
+    
+    // Calculate total income
+    const totalIncome = socialSecurity + pension + traditionalIRA + rothIRA + investments + rental + otherIncome;
+    
+    // Calculate AGI (Adjusted Gross Income)
+    // For simplicity, we're not including all possible adjustments
+    const incomeWithoutSS = pension + traditionalIRA + investments + rental + otherIncome;
+    
+    // Calculate combined income for Social Security taxation
+    const combinedIncome = incomeWithoutSS + (socialSecurity / 2);
+    
+    // Calculate taxable portion of Social Security
+    const ssPercent = getTaxableSocialSecurityPercentage(combinedIncome, filingStatus);
+    const taxableSS = socialSecurity * ssPercent;
+    
+    // Determine deduction amount
+    let deductionAmount = 0;
+    if (deductionType === 'standard') {
+        deductionAmount = standardDeductions2023[filingStatus];
+    } else {
+        deductionAmount = parseFloat(document.getElementById('itemized-deduction-amount').value) || 0;
+    }
+    
+    // Calculate taxable income
+    // Roth IRA withdrawals are not taxable
+    const taxableIncome = Math.max(0, incomeWithoutSS + taxableSS - deductionAmount);
+    
+    // Calculate federal tax
+    const taxResult = calculateFederalTax(taxableIncome, filingStatus);
+    const federalTax = taxResult.totalTax;
+    
+    // Calculate effective tax rate
+    const effectiveTaxRate = totalIncome > 0 ? (federalTax / totalIncome) * 100 : 0;
+    
+// Create income breakdown for display
+    const incomeBreakdown = [
+        { name: 'Social Security', amount: socialSecurity, taxableAmount: taxableSS },
+        { name: 'Pension', amount: pension, taxableAmount: pension },
+        { name: 'Traditional IRA/401(k)', amount: traditionalIRA, taxableAmount: traditionalIRA },
+        { name: 'Roth IRA/401(k)', amount: rothIRA, taxableAmount: 0 },
+        { name: 'Investment Income', amount: investments, taxableAmount: investments },
+        { name: 'Rental Income', amount: rental, taxableAmount: rental },
+        { name: 'Other Income', amount: otherIncome, taxableAmount: otherIncome }
+    ];
+    
+    // Display the results
+    document.getElementById('total-income').textContent = formatCurrency(totalIncome);
+    document.getElementById('taxable-income').textContent = formatCurrency(taxableIncome);
+    document.getElementById('marginal-tax-bracket').textContent = `${(taxResult.marginalRate * 100).toFixed(1)}%`;
+    document.getElementById('effective-tax-rate').textContent = `${effectiveTaxRate.toFixed(1)}%`;
+    document.getElementById('estimated-tax').textContent = formatCurrency(federalTax);
+    
+    // Update income breakdown table
+    const incomeBreakdownTable = document.getElementById('income-breakdown-table');
+    incomeBreakdownTable.innerHTML = '';
+    
+    for (const source of incomeBreakdown) {
+        if (source.amount > 0) {
+            const row = document.createElement('tr');
+            row.innerHTML = `
+                <td style="text-align: left; padding: 8px; border-bottom: 1px solid #ddd;">${source.name}</td>
+                <td style="text-align: right; padding: 8px; border-bottom: 1px solid #ddd;">${formatCurrency(source.amount)}</td>
+                <td style="text-align: right; padding: 8px; border-bottom: 1px solid #ddd;">${formatCurrency(source.taxableAmount)}</td>
+            `;
+            incomeBreakdownTable.appendChild(row);
+        }
+    }
+    
+    // Add a total row
+    const totalRow = document.createElement('tr');
+    totalRow.style.fontWeight = 'bold';
+    totalRow.innerHTML = `
+        <td style="text-align: left; padding: 8px; border-bottom: 1px solid #ddd;">Total</td>
+        <td style="text-align: right; padding: 8px; border-bottom: 1px solid #ddd;">${formatCurrency(totalIncome)}</td>
+        <td style="text-align: right; padding: 8px; border-bottom: 1px solid #ddd;">${formatCurrency(taxableIncome + deductionAmount)}</td>
+    `;
+    incomeBreakdownTable.appendChild(totalRow);
+    
+    // Add a deduction row
+    const deductionRow = document.createElement('tr');
+    deductionRow.innerHTML = `
+        <td style="text-align: left; padding: 8px; border-bottom: 1px solid #ddd;">${deductionType.charAt(0).toUpperCase() + deductionType.slice(1)} Deduction</td>
+        <td style="text-align: right; padding: 8px; border-bottom: 1px solid #ddd;">-</td>
+        <td style="text-align: right; padding: 8px; border-bottom: 1px solid #ddd;">(${formatCurrency(deductionAmount)})</td>
+    `;
+    incomeBreakdownTable.appendChild(deductionRow);
+    
+    // Add a taxable income row
+    const taxableRow = document.createElement('tr');
+    taxableRow.style.fontWeight = 'bold';
+    taxableRow.innerHTML = `
+        <td style="text-align: left; padding: 8px; border-bottom: 2px solid #ddd;">Taxable Income</td>
+        <td style="text-align: right; padding: 8px; border-bottom: 2px solid #ddd;">-</td>
+        <td style="text-align: right; padding: 8px; border-bottom: 2px solid #ddd;">${formatCurrency(taxableIncome)}</td>
+    `;
+    incomeBreakdownTable.appendChild(taxableRow);
+    
+    // Update tax bracket breakdown table
+    const taxBracketTable = document.getElementById('tax-bracket-table');
+    taxBracketTable.innerHTML = '';
+    
+    for (const bracket of taxResult.bracketData) {
+        const row = document.createElement('tr');
+        row.innerHTML = `
+            <td style="text-align: left; padding: 8px; border-bottom: 1px solid #ddd;">${(bracket.rate * 100).toFixed(0)}%</td>
+            <td style="text-align: right; padding: 8px; border-bottom: 1px solid #ddd;">${formatCurrency(bracket.incomeInBracket)}</td>
+            <td style="text-align: right; padding: 8px; border-bottom: 1px solid #ddd;">${formatCurrency(bracket.taxInBracket)}</td>
+        `;
+        taxBracketTable.appendChild(row);
+    }
+    
+    // Add a total row for tax
+    const totalTaxRow = document.createElement('tr');
+    totalTaxRow.style.fontWeight = 'bold';
+    totalTaxRow.innerHTML = `
+        <td style="text-align: left; padding: 8px; border-bottom: 2px solid #ddd;">Total</td>
+        <td style="text-align: right; padding: 8px; border-bottom: 2px solid #ddd;">${formatCurrency(taxableIncome)}</td>
+        <td style="text-align: right; padding: 8px; border-bottom: 2px solid #ddd;">${formatCurrency(federalTax)}</td>
+    `;
+    taxBracketTable.appendChild(totalTaxRow);
+    
+    // Generate tax insights
+    const insightsText = generateTaxInsights(
+        totalIncome,
+        taxableIncome,
+        federalTax,
+        effectiveTaxRate,
+        taxResult.marginalRate,
+        incomeBreakdown,
+        deductionType,
+        deductionAmount,
+        filingStatus,
+        ssPercent
+    );
+    
+    document.getElementById('tax-insights-text').innerHTML = insightsText;
+    
+    // Create visualization
+    createTaxBracketChart(incomeBreakdown, taxResult.bracketData, filingStatus);
+    
+    // Show the results
+    document.getElementById('tax-results').style.display = 'block';
+}
+
+// Generate tax insights text
+function generateTaxInsights(
+    totalIncome,
+    taxableIncome,
+    federalTax,
+    effectiveTaxRate,
+    marginalRate,
+    incomeBreakdown,
+    deductionType,
+    deductionAmount,
+    filingStatus,
+    ssPercent
+) {
+    let insights = '';
+    
+    // Basic tax situation summary
+    insights += `<p>Based on your projected retirement income of ${formatCurrency(totalIncome)}, your federal tax liability is estimated to be ${formatCurrency(federalTax)}, resulting in an effective tax rate of ${effectiveTaxRate.toFixed(1)}%.</p>`;
+    
+    // Marginal vs. effective rate
+    insights += `<p>While your marginal tax rate is ${(marginalRate * 100).toFixed(0)}% (meaning that's the rate on your last dollar of income), your effective tax rate is much lower at ${effectiveTaxRate.toFixed(1)}% due to progressive tax brackets and deductions.</p>`;
+    
+    // Social Security insights
+    const ssBenefit = incomeBreakdown[0].amount;
+    if (ssBenefit > 0) {
+        insights += `<p>Your Social Security benefits of ${formatCurrency(ssBenefit)} per year are ${ssPercent * 100}% taxable, based on your other income sources. `;
+        
+        if (ssPercent < 0.85) {
+            insights += `This partial taxation of Social Security is a significant tax advantage in retirement.</p>`;
+        } else {
+            insights += `Because of your higher income, you're in the maximum 85% taxability range for Social Security benefits.</p>`;
+        }
+    }
+    
+    // Tax-advantaged account insights
+    const rothAmount = incomeBreakdown[3].amount;
+    const traditionalAmount = incomeBreakdown[2].amount;
+    
+    if (rothAmount > 0 && traditionalAmount > 0) {
+        const rothPercentage = (rothAmount / (rothAmount + traditionalAmount) * 100).toFixed(0);
+        insights += `<p>Your retirement withdrawals include a healthy mix of taxable (Traditional) and tax-free (Roth) distributions. Approximately ${rothPercentage}% of your retirement account withdrawals are tax-free Roth distributions.</p>`;
+    } else if (rothAmount > 0) {
+        insights += `<p>Your Roth withdrawals of ${formatCurrency(rothAmount)} are completely tax-free, which significantly reduces your tax burden in retirement.</p>`;
+    } else if (traditionalAmount > 0) {
+        insights += `<p>All of your retirement account withdrawals are from Traditional accounts, which increases your taxable income. Consider if Roth conversions in lower income years before retirement might be beneficial.</p>`;
+    }
+    
+    // Deduction insights
+    if (deductionType === 'standard') {
+        insights += `<p>You're taking the standard deduction of ${formatCurrency(deductionAmount)} for your filing status (${filingStatus.replace(/([A-Z])/g, ' $1').replace(/^./, function(str){ return str.toUpperCase(); })}). `;
+        
+        if (taxableIncome > 100000) {
+            insights += `Given your higher income level, you might want to explore if itemizing deductions would be more beneficial.</p>`;
+        } else {
+            insights += `For most retirees, the standard deduction is the better option, especially after recent tax law changes increased the standard deduction amounts.</p>`;
+        }
+    } else {
+        insights += `<p>You're itemizing deductions for a total of ${formatCurrency(deductionAmount)}. This exceeds the standard deduction amount of ${formatCurrency(standardDeductions2023[filingStatus])} for your filing status.</p>`;
+    }
+    
+    // Tax optimization strategies
+    insights += `<h4 style="margin-top: 15px;">Potential Tax Optimization Strategies:</h4>`;
+    
+    // Strategy 1: Roth conversions
+    if (traditionalAmount > 0 && marginalRate <= 0.22) {
+        insights += `<p><strong>Roth Conversion Opportunity:</strong> With a marginal tax rate of ${(marginalRate * 100).toFixed(0)}%, you might consider Roth conversions to pay taxes now at a potentially lower rate than in the future. This would increase your tax-free withdrawal potential.</p>`;
+    }
+    
+    // Strategy 2: Capital gains harvesting
+    const investmentIncome = incomeBreakdown[4].amount;
+    if (investmentIncome > 0 && taxableIncome < 44000 && filingStatus === 'single') {
+        insights += `<p><strong>Capital Gains Harvesting:</strong> Your taxable income is potentially within the 0% long-term capital gains tax bracket. You might take advantage of this by strategically realizing capital gains that would be taxed at 0%.</p>`;
+    } else if (investmentIncome > 0 && taxableIncome < 89000 && filingStatus === 'married') {
+        insights += `<p><strong>Capital Gains Harvesting:</strong> Your taxable income as a married couple is potentially within the 0% long-term capital gains tax bracket. Consider strategically realizing capital gains that would be taxed at 0%.</p>`;
+    }
+    
+    // Strategy 3: Social Security timing
+    if (ssBenefit > 0 && ssPercent > 0.5) {
+        insights += `<p><strong>Social Security Planning:</strong> With ${ssPercent * 100}% of your Social Security benefits being taxable, you might explore strategies to reduce other income in years where you take Social Security, or adjust your Social Security claiming strategy to minimize the overall tax impact.</p>`;
+    }
+    
+    // Strategy 4: QCD for those over 70.5
+    if (traditionalAmount > 0) {
+        insights += `<p><strong>Qualified Charitable Distributions (QCDs):</strong> Once you reach age 70½, consider making charitable donations directly from your IRA as QCDs, which can satisfy RMDs without increasing your AGI or taxable income.</p>`;
+    }
+    
+    return insights;
+}
+
+// Initialize DOM elements after page load
+document.addEventListener('DOMContentLoaded', function() {
+    // Get elements for tax calculator
+    const taxDeductionType = document.getElementById('tax-deduction-type');
+    const itemizedDeductionContainer = document.getElementById('itemized-deduction-container');
+    const calculateTaxBtn = document.getElementById('calculate-tax-btn');
+    const taxResults = document.getElementById('tax-results');
+    
+    // Toggle itemized deduction input
+    if (taxDeductionType) {
+        taxDeductionType.addEventListener('change', function() {
+            if (this.value === 'itemized') {
+                itemizedDeductionContainer.style.display = 'block';
+            } else {
+                itemizedDeductionContainer.style.display = 'none';
+            }
+        });
+    }
+    
+    // Calculate taxes when button is clicked
+    if (calculateTaxBtn) {
+        calculateTaxBtn.addEventListener('click', calculateTaxBracket);
+    }
+    
+// If Social Security benefit is already entered elsewhere, copy it to the tax calculator
+    const ssBenefit = document.getElementById('ss-monthly-benefit');
+    const taxSS = document.getElementById('tax-social-security');
+    const ssClaimingAge = document.getElementById('ss-claiming-age');
+    
+    if (ssBenefit && taxSS) {
+        // Try to pre-fill Social Security if available
+        if (ssBenefit.value && parseFloat(ssBenefit.value) > 0) {
+            // Get the FRA benefit
+            const fraBenefit = parseFloat(ssBenefit.value);
+            // Get claiming age
+            const claimingAge = parseInt(ssClaimingAge.value) || 67;
+            // Calculate the adjusted benefit
+            const adjustedBenefit = calculateSSBenefit(fraBenefit, claimingAge);
+            // Set annual amount (adjusted monthly × 12)
+            taxSS.value = Math.round(adjustedBenefit * 12);
+        }
+        
+        // Update when SS benefit changes
+        ssBenefit.addEventListener('input', function() {
+            if (this.value && parseFloat(this.value) > 0) {
+                const fraBenefit = parseFloat(this.value);
+                const claimingAge = parseInt(ssClaimingAge.value) || 67;
+                const adjustedBenefit = calculateSSBenefit(fraBenefit, claimingAge);
+                taxSS.value = Math.round(adjustedBenefit * 12);
+            }
+        });
+        
+        // Add event listener for claiming age changes
+        if (ssClaimingAge) {
+            ssClaimingAge.addEventListener('change', function() {
+                if (ssBenefit.value && parseFloat(ssBenefit.value) > 0) {
+                    // Get the FRA benefit
+                    const fraBenefit = parseFloat(ssBenefit.value);
+                    // Calculate the adjusted benefit based on claiming age
+                    const claimingAge = parseInt(this.value);
+                    const adjustedBenefit = calculateSSBenefit(fraBenefit, claimingAge);
+                    // Update the annual amount (adjusted monthly × 12)
+                    taxSS.value = Math.round(adjustedBenefit * 12);
+                }
+            });
+        }
+    }
+    
+    // Pre-fill traditional IRA/401k withdrawals based on 4% rule if available
+    const netWorth = document.getElementById('net-worth');
+    const taxTraditionalIra = document.getElementById('tax-traditional-ira');
+    const withdrawalRateSlider = document.getElementById('withdrawal-rate');
+    
+    if (netWorth && taxTraditionalIra && withdrawalRateSlider) {
+        // Try to pre-fill a reasonable guess for withdrawals
+        netWorth.addEventListener('input', function() {
+            if (this.value && parseFloat(this.value) > 0) {
+                // Assume 70% of net worth is in tax-deferred accounts
+                // and apply current withdrawal rate
+                const withdrawalRate = parseFloat(withdrawalRateSlider.value) / 100;
+                const traditionalEstimate = parseFloat(this.value) * 0.7 * withdrawalRate;
+                taxTraditionalIra.value = Math.round(traditionalEstimate);
+            }
+        });
+        
+        // Also update when withdrawal rate changes
+        withdrawalRateSlider.addEventListener('input', function() {
+            if (netWorth.value && parseFloat(netWorth.value) > 0) {
+                const withdrawalRate = parseFloat(this.value) / 100;
+                const traditionalEstimate = parseFloat(netWorth.value) * 0.7 * withdrawalRate;
+                taxTraditionalIra.value = Math.round(traditionalEstimate);
+            }
+        });
+    }
+});
+    </script>
+</body>
+</html>
