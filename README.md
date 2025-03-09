@@ -45,6 +45,9 @@ This tool helps answer critical questions such as:
 - **Detailed Expense Tracking**: Breaks down expenses by category (housing, food, healthcare, etc.)
 - **Total vs. Detailed View**: Choose between simple total monthly expenses or detailed categorization
 
+### PDF Creation
+- **Create PDF Report**: Creates a PDF Report of the key details and charts
+
 ## How to Use the Calculator
 
 ### Step 1: Enter Basic Information
@@ -82,6 +85,9 @@ This tool helps answer critical questions such as:
 - Click the "Calculate Retirement Readiness" button for core analysis
 - Click the "Calculate Tax Bracket" button for tax analysis
 - Review results in the various output sections
+
+### Step 7: Create PDF Report (Optional)
+- Click the red "Download PDF Report" button for a PDF report saved on your local computer
 
 ## Core Calculations
 
