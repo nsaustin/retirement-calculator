@@ -2013,52 +2013,52 @@ document.addEventListener('DOMContentLoaded', function() {
 
 /****** TAX BRACKET ESTIMATION ******/
 
-// 2023 Tax Brackets
-const taxBrackets2023 = {
+// 2025 Tax Brackets
+const taxBrackets2025 = {
     single: [
         { rate: 0.10, bracket: 0 },
-        { rate: 0.12, bracket: 11000 },
-        { rate: 0.22, bracket: 44725 },
-        { rate: 0.24, bracket: 95375 },
-        { rate: 0.32, bracket: 182100 },
-        { rate: 0.35, bracket: 231250 },
-        { rate: 0.37, bracket: 578125 }
+        { rate: 0.12, bracket: 11925 },
+        { rate: 0.22, bracket: 48500 },
+        { rate: 0.24, bracket: 103400 },
+        { rate: 0.32, bracket: 197450 },
+        { rate: 0.35, bracket: 250800 },
+        { rate: 0.37, bracket: 626950 }
     ],
     married: [
         { rate: 0.10, bracket: 0 },
-        { rate: 0.12, bracket: 22000 },
-        { rate: 0.22, bracket: 89450 },
-        { rate: 0.24, bracket: 190750 },
-        { rate: 0.32, bracket: 364200 },
-        { rate: 0.35, bracket: 462500 },
-        { rate: 0.37, bracket: 693750 }
+        { rate: 0.12, bracket: 23850 },
+        { rate: 0.22, bracket: 97000 },
+        { rate: 0.24, bracket: 206800 },
+        { rate: 0.32, bracket: 394900 },
+        { rate: 0.35, bracket: 501600 },
+        { rate: 0.37, bracket: 752350 }
     ],
     head: [
         { rate: 0.10, bracket: 0 },
-        { rate: 0.12, bracket: 15700 },
-        { rate: 0.22, bracket: 59850 },
-        { rate: 0.24, bracket: 95350 },
-        { rate: 0.32, bracket: 182100 },
-        { rate: 0.35, bracket: 231250 },
-        { rate: 0.37, bracket: 578100 }
+        { rate: 0.12, bracket: 17025 },
+        { rate: 0.22, bracket: 64950 },
+        { rate: 0.24, bracket: 103400 },
+        { rate: 0.32, bracket: 197450 },
+        { rate: 0.35, bracket: 250800 },
+        { rate: 0.37, bracket: 626950 }
     ],
     separate: [
         { rate: 0.10, bracket: 0 },
-        { rate: 0.12, bracket: 11000 },
-        { rate: 0.22, bracket: 44725 },
-        { rate: 0.24, bracket: 95375 },
-        { rate: 0.32, bracket: 182100 },
-        { rate: 0.35, bracket: 231250 },
-        { rate: 0.37, bracket: 346875 }
+        { rate: 0.12, bracket: 11925 },
+        { rate: 0.22, bracket: 48500 },
+        { rate: 0.24, bracket: 103400 },
+        { rate: 0.32, bracket: 197450 },
+        { rate: 0.35, bracket: 250800 },
+        { rate: 0.37, bracket: 376175 }
     ]
 };
 
-// Standard Deductions for 2023
-const standardDeductions2023 = {
-    single: 13850,
-    married: 27700,
-    head: 20800,
-    separate: 13850
+// Standard Deductions for 2025
+const standardDeductions2025 = {
+    single: 15000,
+    married: 30000,
+    head: 22550,
+    separate: 15000
 };
 
 // Percentage of Social Security that is taxable at different income levels
@@ -2088,7 +2088,7 @@ function getTaxableSocialSecurityPercentage(combinedIncome, filingStatus) {
 
 // Function to calculate federal income tax
 function calculateFederalTax(taxableIncome, filingStatus) {
-    const brackets = taxBrackets2023[filingStatus];
+    const brackets = taxBrackets2025[filingStatus];
     let tax = 0;
     let bracketData = [];
     
@@ -2446,7 +2446,7 @@ function calculateTaxBracket() {
     // Determine deduction amount
     let deductionAmount = 0;
     if (deductionType === 'standard') {
-        deductionAmount = standardDeductions2023[filingStatus];
+        deductionAmount = standardDeductions2025[filingStatus];
     } else {
         deductionAmount = parseFloat(document.getElementById('itemized-deduction-amount').value) || 0;
     }
@@ -2628,7 +2628,7 @@ function generateTaxInsights(
             insights += `For most retirees, the standard deduction is the better option, especially after recent tax law changes increased the standard deduction amounts.</p>`;
         }
     } else {
-        insights += `<p>You're itemizing deductions for a total of ${formatCurrency(deductionAmount)}. This exceeds the standard deduction amount of ${formatCurrency(standardDeductions2023[filingStatus])} for your filing status.</p>`;
+        insights += `<p>You're itemizing deductions for a total of ${formatCurrency(deductionAmount)}. This exceeds the standard deduction amount of ${formatCurrency(standardDeductions2025[filingStatus])} for your filing status.</p>`;
     }
     
     // Tax optimization strategies
