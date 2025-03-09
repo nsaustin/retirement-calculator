@@ -255,6 +255,8 @@
 }
     </style>
 	<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.9.1/chart.min.js"></script>
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
 </head>
 <body>
     <div class="container">
@@ -752,6 +754,12 @@
 			<div id="chart-container" style="width: 100%; height: 400px; margin-top: 20px;"></div>
 			</div>
 
+            <div class="download-report" id="download-report-container" style="margin-top: 40px; text-align: center; display: none;">
+                <button id="download-pdf-btn" class="secondary-btn" style="background-color: var(--accent-color); color: white; padding: 12px 25px; font-size: 18px;">
+                    Download PDF Report
+                </button>
+            </div>
+
             <div class="calculation-note" style="margin-top: 80px;">
                 <strong>Note:</strong> The calculations account for inflation by using the "real" return rate (nominal return minus inflation rate) when determining how long your money will last. The required retirement savings is based on your initial withdrawal amount and withdrawal rate.
             </div>
@@ -1031,6 +1039,9 @@ function calculateMoneyDuration(principal, annualExpenses, withdrawalRate, nomin
             // Show results
             resultsCard.style.display = 'block';
             resultsCard.scrollIntoView({ behavior: 'smooth' });
+            
+            // Show the PDF download button
+            document.getElementById('download-report-container').style.display = 'block';
         });
         
         // Uncomment the line below to auto-fill sample data for testing
@@ -2753,6 +2764,187 @@ document.addEventListener('DOMContentLoaded', function() {
                 taxTraditionalIra.value = Math.round(traditionalEstimate);
             }
         });
+    }
+});
+
+// PDF Generation functionality
+document.addEventListener('DOMContentLoaded', function() {
+    const downloadPdfBtn = document.getElementById('download-pdf-btn');
+    
+    if (downloadPdfBtn) {
+        downloadPdfBtn.addEventListener('click', generatePdfReport);
+    }
+    
+    function generatePdfReport() {
+        // Make sure jsPDF is loaded
+        if (typeof window.jspdf === 'undefined') {
+            console.error('jsPDF library not loaded');
+            alert('PDF generation library not loaded. Please try again later.');
+            return;
+        }
+        
+        const { jsPDF } = window.jspdf;
+        
+        // Create a new PDF document
+        const doc = new jsPDF({
+            orientation: 'portrait',
+            unit: 'mm',
+            format: 'a4',
+            compress: true
+        });
+        
+        // Add title and date
+        doc.setFontSize(22);
+        doc.setTextColor(58, 110, 165); // Primary color
+        doc.text('Retirement Readiness Report', 105, 20, { align: 'center' });
+        
+        doc.setFontSize(12);
+        doc.setTextColor(102, 102, 102);
+        const today = new Date();
+        doc.text(`Generated on ${today.toLocaleDateString()}`, 105, 30, { align: 'center' });
+        
+        // Add a separator line
+        doc.setDrawColor(58, 110, 165);
+        doc.setLineWidth(0.5);
+        doc.line(20, 35, 190, 35);
+        
+        // Get user input data
+        const currentAge = document.getElementById('current-age').value || 'N/A';
+        const netWorth = formatCurrency(parseFloat(document.getElementById('net-worth').value) || 0);
+        
+        // Populate user info section
+        doc.setFontSize(16);
+        doc.setTextColor(58, 110, 165);
+        doc.text('Personal Information', 20, 45);
+        
+        doc.setFontSize(12);
+        doc.setTextColor(0, 0, 0);
+        doc.text(`Current Age: ${currentAge}`, 20, 55);
+        doc.text(`Current Net Worth: ${netWorth}`, 20, 62);
+        
+        // Get financial parameters
+        const withdrawalRate = document.getElementById('withdrawal-rate-value').textContent;
+        const returnRate = document.getElementById('return-rate-value').textContent;
+        const inflationRate = document.getElementById('inflation-rate-value').textContent;
+        
+        // Financial parameters section
+        doc.setFontSize(16);
+        doc.setTextColor(58, 110, 165);
+        doc.text('Financial Assumptions', 20, 75);
+        
+        doc.setFontSize(12);
+        doc.setTextColor(0, 0, 0);
+        doc.text(`Annual Withdrawal Rate: ${withdrawalRate}`, 20, 85);
+        doc.text(`Expected Annual Return: ${returnRate}`, 20, 92);
+        doc.text(`Expected Inflation Rate: ${inflationRate}`, 20, 99);
+        
+        // Results section
+        doc.setFontSize(16);
+        doc.setTextColor(58, 110, 165);
+        doc.text('Retirement Analysis Results', 20, 115);
+        
+        // Get results data
+        const totalMonthlyExpenses = document.getElementById('total-monthly-expenses').textContent;
+        const annualExpenses = document.getElementById('annual-expenses').textContent;
+        const requiredSavings = document.getElementById('required-savings').textContent;
+        const realReturnRate = document.getElementById('real-return-rate').textContent;
+        const ssPercent = document.getElementById('ss-coverage-percent') ? 
+            document.getElementById('ss-coverage-percent').textContent : 'N/A';
+        
+        // Results grid
+        doc.setFontSize(12);
+        doc.setTextColor(0, 0, 0);
+        doc.text(`Monthly Expenses: ${totalMonthlyExpenses}`, 20, 125);
+        doc.text(`Annual Expenses: ${annualExpenses}`, 20, 132);
+        doc.text(`Required Savings: ${requiredSavings}`, 20, 139);
+        doc.text(`Real Return Rate: ${realReturnRate}`, 20, 146);
+        doc.text(`Social Security Coverage: ${ssPercent}`, 20, 153);
+        
+        // Insights section
+        doc.setFontSize(16);
+        doc.setTextColor(58, 110, 165);
+        doc.text('Key Insights', 20, 170);
+        
+        // Get insight text
+        const insightText = document.getElementById('retirement-insight').innerText;
+        const moneyLastingText = document.getElementById('money-lasting').innerText;
+        const inflationImpactText = document.getElementById('inflation-impact').innerText;
+        
+        // Add chart from canvas as image (if available)
+        try {
+            const chartCanvas = document.getElementById('retirement-chart');
+            if (chartCanvas) {
+                const chartImg = chartCanvas.toDataURL('image/png');
+                doc.addPage();
+                doc.setFontSize(16);
+                doc.setTextColor(58, 110, 165);
+                doc.text('Retirement Projection Chart', 105, 20, { align: 'center' });
+                doc.addImage(chartImg, 'PNG', 15, 30, 180, 100);
+                doc.setFontSize(10);
+                doc.setTextColor(102, 102, 102);
+                doc.text('This chart shows your projected net worth over time based on your inputs', 105, 140, { align: 'center' });
+            }
+        } catch (e) {
+            console.error('Could not add chart to PDF', e);
+        }
+        
+        // Format and add insights
+        doc.setFontSize(10);
+        doc.setTextColor(0, 0, 0);
+        
+        // Helper function to handle text wrapping
+        function addWrappedText(text, x, y, maxWidth, lineHeight) {
+            const lines = doc.splitTextToSize(text, maxWidth);
+            doc.text(lines, x, y);
+            return y + (lines.length * lineHeight);
+        }
+        
+        let yPos = 180;
+        doc.setFontSize(12);
+        doc.setTextColor(58, 110, 165);
+        doc.text('Retirement Readiness:', 20, yPos);
+        doc.setTextColor(0, 0, 0);
+        doc.setFontSize(10);
+        yPos = addWrappedText(insightText.replace(/<\/?span.*?>/g, ''), 20, yPos + 8, 170, 5);
+        
+        doc.setFontSize(12);
+        doc.setTextColor(58, 110, 165);
+        doc.text('Portfolio Longevity:', 20, yPos + 5);
+        doc.setTextColor(0, 0, 0);
+        doc.setFontSize(10);
+        yPos = addWrappedText(moneyLastingText.replace(/<\/?strong>/g, ''), 20, yPos + 13, 170, 5);
+        
+        // Add a second page if needed
+        if (yPos > 270) {
+            doc.addPage();
+            yPos = 20;
+        }
+        
+        // Check if SS impact section exists and is visible
+        const ssImpactSection = document.getElementById('ss-impact-section');
+        if (ssImpactSection && ssImpactSection.style.display !== 'none') {
+            const ssImpactText = document.getElementById('ss-impact-text').innerText;
+            
+            doc.setFontSize(12);
+            doc.setTextColor(58, 110, 165);
+            doc.text('Social Security Impact:', 20, yPos + 5);
+            doc.setTextColor(0, 0, 0);
+            doc.setFontSize(10);
+            yPos = addWrappedText(ssImpactText.replace(/<\/?br>|<\/?strong>/g, ' '), 20, yPos + 13, 170, 5);
+        }
+        
+        // Add a footer
+        const pageCount = doc.getNumberOfPages();
+        for (let i = 1; i <= pageCount; i++) {
+            doc.setPage(i);
+            doc.setFontSize(8);
+            doc.setTextColor(150, 150, 150);
+            doc.text('Created with Retirement Calculator', 105, 290, { align: 'center' });
+            doc.text(`Page ${i} of ${pageCount}`, 185, 290, { align: 'right' });
+        }
+        
+        // Save the PDF
+        doc.save('Retirement-Analysis-Report.pdf');
     }
 });
     </script>
