@@ -1,0 +1,533 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Retirement Calculator</title>
+    <link rel="stylesheet" href="styles.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.9.1/chart.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>Retirement Calculator</h1>
+            <p class="description">Determine if you're financially ready to retire by entering your current expenses, age, and net worth. The calculator will show you how long your money will last based on the 4% rule and other withdrawal strategies. Updated 2025.</p>
+        </header>
+        
+        
+<div id="validation-summary" class="validation-summary" role="alert" aria-live="polite">
+    <strong>Please fix these items before calculating:</strong>
+    <ul id="validation-list"></ul>
+</div>
+<div class="doc-callout">
+    This calculator is an <strong>illustrative planning tool</strong>. It uses simplified retirement, Social Security, and tax assumptions and should not be treated as tax, legal, or investment advice.
+</div>
+
+
+        <div class="card">
+            <h2>Personal Information</h2>
+            <div class="form-grid">
+                <div class="form-group">
+                    <label for="current-age">Current Age</label>
+                    <input type="number" id="current-age" placeholder="e.g., 45" min="0" max="120">
+                </div>
+                <div class="form-group">
+                    <label for="net-worth">Current Net Worth ($)</label>
+                    <input type="number" id="net-worth" placeholder="e.g., 1000000" min="0">
+                </div>
+            </div>
+        </div>
+        
+		<div class="card">
+    <h2>Monthly Expenses</h2>
+    <div class="form-group">
+        <label for="expense-input-type">Expense Input Method</label>
+        <select id="expense-input-type" class="form-select">
+            <option value="total">Total Monthly Expenses</option>
+            <option value="detailed">Detailed Expenses by Category</option>
+        </select>
+    </div>
+	
+	    <div id="total-expenses-container">
+        <div class="form-group">
+            <label for="total-monthly-expenses-input">Total Monthly Expenses ($)</label>
+            <input type="number" id="total-monthly-expenses-input" placeholder="e.g., 3500" min="0">
+        </div>
+    </div>
+		
+    <div id="detailed-expenses-container" style="display: none;">
+        <div class="form-grid">
+                <div class="form-group">
+                    <label for="housing">Housing ($)</label>
+                    <input type="number" id="housing" placeholder="e.g., 1500" min="0">
+                </div>
+                <div class="form-group">
+                    <label for="gas-home">Gas (Home) ($)</label>
+                    <input type="number" id="gas-home" placeholder="e.g., 100" min="0">
+                </div>
+                <div class="form-group">
+                    <label for="electric">Electric ($)</label>
+                    <input type="number" id="electric" placeholder="e.g., 150" min="0">
+                </div>
+                <div class="form-group">
+                    <label for="internet">Internet ($)</label>
+                    <input type="number" id="internet" placeholder="e.g., 80" min="0">
+                </div>
+                <div class="form-group">
+                    <label for="insurance">Insurance ($)</label>
+                    <input type="number" id="insurance" placeholder="e.g., 300" min="0">
+                </div>
+                <div class="form-group">
+                    <label for="groceries">Groceries ($)</label>
+                    <input type="number" id="groceries" placeholder="e.g., 500" min="0">
+                </div>
+                <div class="form-group">
+                    <label for="eating-out">Eating Out ($)</label>
+                    <input type="number" id="eating-out" placeholder="e.g., 200" min="0">
+                </div>
+                <div class="form-group">
+                    <label for="gas-car">Gas (Car) ($)</label>
+                    <input type="number" id="gas-car" placeholder="e.g., 150" min="0">
+                </div>
+                <div class="form-group">
+                    <label for="cell-phones">Cell Phones ($)</label>
+                    <input type="number" id="cell-phones" placeholder="e.g., 120" min="0">
+                </div>
+                <div class="form-group">
+                    <label for="public-transit">Public Transit ($)</label>
+                    <input type="number" id="public-transit" placeholder="e.g., 50" min="0">
+                </div>
+                <div class="form-group">
+                    <label for="tolls">Tolls ($)</label>
+                    <input type="number" id="tolls" placeholder="e.g., 40" min="0">
+                </div>
+                <div class="form-group">
+                    <label for="entertainment">Entertainment ($)</label>
+                    <input type="number" id="entertainment" placeholder="e.g., 150" min="0">
+                </div>
+                <div class="form-group">
+                    <label for="clothing">Clothing ($)</label>
+                    <input type="number" id="clothing" placeholder="e.g., 100" min="0">
+                </div>
+                <div class="form-group">
+                    <label for="water-sewer">Water and Sewer ($)</label>
+                    <input type="number" id="water-sewer" placeholder="e.g., 70" min="0">
+                </div>
+                <div class="form-group">
+                    <label for="self-care">Self Care ($)</label>
+                    <input type="number" id="self-care" placeholder="e.g., 100" min="0">
+                </div>
+                <div class="form-group">
+                    <label for="gym">Gym ($)</label>
+                    <input type="number" id="gym" placeholder="e.g., 50" min="0">
+                </div>
+                <div class="form-group">
+                    <label for="music">Music ($)</label>
+                    <input type="number" id="music" placeholder="e.g., 15" min="0">
+                </div>
+                <div class="form-group">
+                    <label for="education">Education ($)</label>
+                    <input type="number" id="education" placeholder="e.g., 100" min="0">
+                </div>
+                <div class="form-group">
+                    <label for="medical">Medical ($)</label>
+                    <input type="number" id="medical" placeholder="e.g., 200" min="0">
+                </div>
+                <div class="form-group">
+                    <label for="gifts">Gifts ($)</label>
+                    <input type="number" id="gifts" placeholder="e.g., 50" min="0">
+                </div>
+                <div class="form-group">
+                    <label for="charity">Charity ($)</label>
+                    <input type="number" id="charity" placeholder="e.g., 100" min="0">
+                </div>
+                <div class="form-group">
+                    <label for="fees">Fees ($)</label>
+                    <input type="number" id="fees" placeholder="e.g., 30" min="0">
+                </div>
+                <div class="form-group">
+                    <label for="misc">Miscellaneous ($)</label>
+                    <input type="number" id="misc" placeholder="e.g., 100" min="0">
+                </div>
+            </div>
+        </div>
+        
+        <div class="card">
+            <h2>Financial Assumptions</h2>
+            <div class="slider-container">
+                <label for="withdrawal-rate">Annual Withdrawal Rate</label>
+                <div class="slider-info">
+                    <span>2.5%</span>
+                    <span class="value-display" id="withdrawal-rate-value">4.0%</span>
+                    <span>6.0%</span>
+                </div>
+                <input type="range" id="withdrawal-rate" min="2.5" max="6.0" step="0.1" value="4.0">
+            </div>
+            
+            <div class="slider-container">
+                <label for="return-rate">Expected Annual Return Rate (before inflation)</label>
+                <div class="slider-info">
+                    <span>3.0%</span>
+                    <span class="value-display" id="return-rate-value">7.0%</span>
+                    <span>10.0%</span>
+                </div>
+                <input type="range" id="return-rate" min="3.0" max="10.0" step="0.1" value="7.0">
+            </div>
+            
+            <div class="slider-container">
+                <label for="inflation-rate">Expected Annual Inflation Rate</label>
+                <div class="slider-info">
+                    <span>1.0%</span>
+                    <span class="value-display" id="inflation-rate-value">2.5%</span>
+                    <span>4.0%</span>
+                </div>
+                <input type="range" id="inflation-rate" min="1.0" max="4.0" step="0.1" value="2.5">
+            </div>
+            
+			<!-- Social Security Benefits Card -->
+<div class="card">
+    <h2>Social Security Benefits</h2>
+    <p class="description">Include your expected Social Security benefits to improve the accuracy of your retirement projections.</p>
+    
+    <div class="form-grid">
+        <div class="form-group">
+            <label for="ss-include">Include Social Security?</label>
+            <select id="ss-include" class="form-select">
+                <option value="yes">Yes</option>
+                <option value="no">No</option>
+            </select>
+        </div>
+        
+        <div class="form-group" id="ss-method-container">
+            <label for="ss-method">Social Security Input Method</label>
+            <select id="ss-method" class="form-select">
+                <option value="statement">I have my Social Security statement</option>
+                <option value="estimate">I need an estimate</option>
+            </select>
+        </div>
+    </div>
+    
+    <!-- Fields for "I have my statement" option -->
+    <div id="ss-statement-fields">
+        <div class="form-grid">
+            <div class="form-group">
+                <label for="ss-monthly-benefit">Monthly Benefit at Full Retirement Age ($)</label>
+                <input type="number" id="ss-monthly-benefit" placeholder="e.g., 2000" min="0">
+            </div>
+            
+            <div class="form-group">
+                <label for="ss-claiming-age">Planned Claiming Age</label>
+                <select id="ss-claiming-age" class="form-select">
+                    <option value="62">62 (earliest)</option>
+                    <option value="63">63</option>
+                    <option value="64">64</option>
+                    <option value="65">65</option>
+                    <option value="66">66</option>
+                    <option value="67" selected>67 (Full Retirement Age)</option>
+                    <option value="68">68</option>
+                    <option value="69">69</option>
+                    <option value="70">70 (maximum benefit)</option>
+                </select>
+            </div>
+        </div>
+        
+        <div class="ss-benefit-table" id="ss-benefit-table">
+            <h3>Estimated Monthly Benefit by Claiming Age</h3>
+            <div class="table-container">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Claiming Age</th>
+                            <th>Monthly Benefit</th>
+                            <th>% of Full Benefit</th>
+                        </tr>
+                    </thead>
+                    <tbody id="ss-benefit-table-body">
+                        <!-- Will be populated by JavaScript -->
+                    </tbody>
+                </table>
+            </div>
+        </div>
+        
+        <!-- Social Security Strategy Chart - MOVED HERE from Results section -->
+        <div id="ss-strategy-comparison-input" style="margin-top: 20px;">
+            <h3>Social Security Claiming Strategy Comparison</h3>
+            <p class="description">This chart shows how different claiming ages affect your monthly benefit and portfolio longevity.</p>
+            <div id="ss-strategy-chart-input" style="width: 100%; height: 300px; margin-top: 15px;"></div>
+        </div>
+    </div>
+    
+    <!-- Fields for "I need an estimate" option -->
+    <div id="ss-estimate-fields" style="display: none;">
+        <div class="form-grid">
+            <div class="form-group">
+                <label for="ss-birth-year">Birth Year</label>
+                <input type="number" id="ss-birth-year" placeholder="e.g., 1965" min="1900" max="2100">
+            </div>
+            
+            <div class="form-group">
+                <label for="ss-years-worked">Years Worked (out of 35)</label>
+                <input type="number" id="ss-years-worked" placeholder="e.g., 30" min="0" max="35" value="35">
+            </div>
+            
+            <div class="form-group">
+                <label for="ss-avg-income">Average Annual Income (highest 35 years) ($)</label>
+                <input type="number" id="ss-avg-income" placeholder="e.g., 60000" min="0">
+            </div>
+            
+            <div class="form-group">
+                <button id="ss-calculate-btn" class="secondary-btn">Calculate Benefit Estimate</button>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Spouse Social Security Section -->
+    <div class="spouse-ss-section">
+        <div class="form-group">
+            <label for="include-spouse">Include Spouse's Social Security?</label>
+            <select id="include-spouse" class="form-select">
+                <option value="no">No</option>
+                <option value="yes">Yes</option>
+            </select>
+        </div>
+        
+        <div id="spouse-ss-fields" style="display: none;">
+            <div class="form-grid">
+                <div class="form-group">
+                    <label for="spouse-monthly-benefit">Spouse's Monthly Benefit at FRA ($)</label>
+                    <input type="number" id="spouse-monthly-benefit" placeholder="e.g., 1800" min="0">
+                </div>
+                
+                <div class="form-group">
+                    <label for="spouse-claiming-age">Spouse's Planned Claiming Age</label>
+                    <select id="spouse-claiming-age" class="form-select">
+                        <option value="62">62 (earliest)</option>
+                        <option value="67" selected>67 (Full Retirement Age)</option>
+                        <option value="70">70 (maximum benefit)</option>
+                    </select>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Income Tax Bracket Estimation Card -->
+<div class="card">
+    <h2>Income Tax Bracket Estimation</h2>
+    <p class="description">Estimate your tax bracket in retirement based on projected income sources and filing status.</p>
+    
+    <div class="form-grid">
+        <div class="form-group">
+            <label for="tax-filing-status">Filing Status</label>
+            <select id="tax-filing-status" class="form-select">
+                <option value="single">Single</option>
+                <option value="married">Married Filing Jointly</option>
+                <option value="head">Head of Household</option>
+                <option value="separate">Married Filing Separately</option>
+            </select>
+        </div>
+        
+        <div class="form-group">
+            <label for="tax-deduction-type">Deduction Type</label>
+            <select id="tax-deduction-type" class="form-select">
+                <option value="standard">Standard Deduction</option>
+                <option value="itemized">Itemized Deductions</option>
+            </select>
+        </div>
+        
+        <div class="form-group" id="itemized-deduction-container" style="display: none;">
+            <label for="itemized-deduction-amount">Itemized Deduction Amount ($)</label>
+            <input type="number" id="itemized-deduction-amount" placeholder="e.g., 25000" min="0">
+        </div>
+    </div>
+    
+    <h3>Retirement Income Sources</h3>
+    <div class="form-grid">
+        <div class="form-group">
+            <label for="tax-social-security">Social Security (Annual) ($)</label>
+            <input type="number" id="tax-social-security" placeholder="e.g., 30000" min="0">
+        </div>
+        
+        <div class="form-group">
+            <label for="tax-pension">Pension Income (Annual) ($)</label>
+            <input type="number" id="tax-pension" placeholder="e.g., 20000" min="0">
+        </div>
+        
+        <div class="form-group">
+            <label for="tax-traditional-ira">Traditional IRA/401(k) Withdrawals (Annual) ($)</label>
+            <input type="number" id="tax-traditional-ira" placeholder="e.g., 40000" min="0">
+        </div>
+        
+        <div class="form-group">
+            <label for="tax-roth">Roth IRA/401(k) Withdrawals (Annual) ($)</label>
+            <input type="number" id="tax-roth" placeholder="e.g., 15000" min="0">
+        </div>
+        
+        <div class="form-group">
+            <label for="tax-investments">Investment Income (Annual) ($)</label>
+            <input type="number" id="tax-investments" placeholder="e.g., 10000" min="0">
+        </div>
+        
+        <div class="form-group">
+            <label for="tax-rental">Rental Income (Annual) ($)</label>
+            <input type="number" id="tax-rental" placeholder="e.g., 12000" min="0">
+        </div>
+        
+        <div class="form-group">
+            <label for="tax-other">Other Taxable Income (Annual) ($)</label>
+            <input type="number" id="tax-other" placeholder="e.g., 5000" min="0">
+        </div>
+    </div>
+    
+    <div style="margin-top: 20px;">
+        <button id="calculate-tax-btn" class="secondary-btn">Calculate Tax Bracket</button>
+    </div>
+    
+    <!-- Tax Bracket Results Section (Initially Hidden) -->
+    <div id="tax-results" style="display: none; margin-top: 25px;">
+        <h3>Tax Bracket Analysis</h3>
+        
+        <div class="results-grid" style="grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));">
+            <div class="metric">
+                <div class="metric-title">Total Annual Income</div>
+                <div class="metric-value" id="total-income">$0</div>
+            </div>
+            <div class="metric">
+                <div class="metric-title">Taxable Income</div>
+                <div class="metric-value" id="taxable-income">$0</div>
+            </div>
+            <div class="metric">
+                <div class="metric-title">Marginal Tax Bracket</div>
+                <div class="metric-value" id="marginal-tax-bracket">0%</div>
+            </div>
+            <div class="metric">
+                <div class="metric-title">Effective Tax Rate</div>
+                <div class="metric-value" id="effective-tax-rate">0%</div>
+            </div>
+            <div class="metric">
+                <div class="metric-title">Estimated Federal Tax</div>
+                <div class="metric-value" id="estimated-tax">$0</div>
+            </div>
+        </div>
+        
+        <div class="insight" style="margin-top: 20px;">
+            <div class="insight-title">Income Breakdown:</div>
+            <div class="table-container">
+                <table style="width: 100%; border-collapse: collapse; margin-top: 10px;">
+                    <thead>
+                        <tr>
+                            <th style="text-align: left; padding: 8px; border-bottom: 2px solid var(--secondary-color);">Income Source</th>
+                            <th style="text-align: right; padding: 8px; border-bottom: 2px solid var(--secondary-color);">Amount</th>
+                            <th style="text-align: right; padding: 8px; border-bottom: 2px solid var(--secondary-color);">Taxable Amount</th>
+                        </tr>
+                    </thead>
+                    <tbody id="income-breakdown-table">
+                        <!-- Will be filled by JavaScript -->
+                    </tbody>
+                </table>
+            </div>
+        </div>
+        
+        <div class="insight" style="margin-top: 20px;">
+            <div class="insight-title">Tax Bracket Breakdown:</div>
+            <div class="table-container">
+                <table style="width: 100%; border-collapse: collapse; margin-top: 10px;">
+                    <thead>
+                        <tr>
+                            <th style="text-align: left; padding: 8px; border-bottom: 2px solid var(--secondary-color);">Tax Bracket</th>
+                            <th style="text-align: right; padding: 8px; border-bottom: 2px solid var(--secondary-color);">Income in Bracket</th>
+                            <th style="text-align: right; padding: 8px; border-bottom: 2px solid var(--secondary-color);">Tax in Bracket</th>
+                        </tr>
+                    </thead>
+                    <tbody id="tax-bracket-table">
+                        <!-- Will be filled by JavaScript -->
+                    </tbody>
+                </table>
+            </div>
+        </div>
+        
+        <div class="insight" style="margin-top: 20px;">
+            <div class="insight-title">Tax Insights:</div>
+            <p id="tax-insights-text"></p>
+        </div>
+        
+        <div id="tax-strategy-chart-container" style="width: 100%; height: 300px; margin-top: 25px;">
+            <!-- Chart will be added here -->
+        </div>
+    </div>
+</div>
+			
+            <button id="calculate-btn">Calculate Retirement Readiness</button>
+        </div>
+        
+        <div class="results-card" id="results">
+            <h2>Your Retirement Analysis</h2>
+            
+            <div class="results-grid">
+                <div class="metric">
+                    <div class="metric-title">Total Monthly Expenses</div>
+                    <div class="metric-value" id="total-monthly-expenses">$0</div>
+                </div>
+                <div class="metric">
+                    <div class="metric-title">Annual Expenses</div>
+                    <div class="metric-value" id="annual-expenses">$0</div>
+                </div>
+                <div class="metric">
+                    <div class="metric-title">Required Retirement Savings</div>
+                    <div class="metric-value" id="required-savings">$0</div>
+                </div>
+                <div class="metric">
+                    <div class="metric-title">Real Return Rate (after inflation)</div>
+                    <div class="metric-value" id="real-return-rate">0.0%</div>
+                </div>
+                <!-- Social Security Coverage metric -->
+                <div class="metric">
+                    <div class="metric-title">Social Security Coverage</div>
+                    <div class="metric-value" id="ss-coverage-percent">0%</div>
+                </div>
+            </div>
+            
+            <div class="insight">
+                <div class="insight-title">Key Insights:</div>
+                <p id="retirement-insight"></p>
+            </div>
+            
+            <div class="insight">
+                <div class="insight-title">How Long Your Money Will Last:</div>
+                <p id="money-lasting"></p>
+            </div>
+            
+            <div class="insight">
+                <div class="insight-title">Inflation Impact:</div>
+                <p id="inflation-impact"></p>
+            </div>
+            
+            <!-- Modified Social Security impact section (chart removed) -->
+            <div class="insight" id="ss-impact-section" style="display: none;">
+                <div class="insight-title">Social Security Impact:</div>
+                <p id="ss-impact-text"></p>
+            </div>
+            
+			<div class="insight">
+			<div class="insight-title">Net Worth Projection:</div>
+			<div id="chart-container" style="width: 100%; height: 400px; margin-top: 20px;"></div>
+			</div>
+
+            <div class="download-report" id="download-report-container" style="margin-top: 40px; text-align: center; display: none;">
+                <button id="download-pdf-btn" class="secondary-btn" style="background-color: var(--accent-color); color: white; padding: 12px 25px; font-size: 18px;">
+                    Download PDF Report
+                </button>
+            </div>
+
+            <div class="calculation-note" style="margin-top: 80px;">
+                <strong>Note:</strong> The calculations account for inflation by using the "real" return rate (nominal return minus inflation rate) when determining how long your money will last. The required retirement savings is based on your initial withdrawal amount and withdrawal rate.
+            </div>
+        </div>
+    </div>
+    <script src="js/calculations.js"></script>
+    <script src="js/legacy-app.js"></script>
+    <script src="js/enhancements.js"></script>
+</body>
+</html>
