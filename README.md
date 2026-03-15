@@ -11,7 +11,7 @@ A static browser-based retirement planning calculator for quick what-if analysis
 
 ![Screenshot](screen.png)
 
-## What it does
+## Overview
 
 This project helps answer practical planning questions like:
 
@@ -20,11 +20,11 @@ This project helps answer practical planning questions like:
 - How much does Social Security reduce portfolio pressure?
 - What does my retirement income mix do to my estimated federal taxes?
 
-The app runs entirely client-side and can be opened as a simple static page.
+The calculator runs entirely client-side in the browser.
 
-## What it does **not** do
+## Scope and limitations
 
-This calculator is useful, but it is still a simplified planning tool — not a full financial-planning engine.
+This is a simplified planning tool, not a full financial-planning engine.
 
 It does **not** currently model all of the following:
 
@@ -43,17 +43,14 @@ Treat the results as **illustrative estimates**, not tax, legal, or investment a
 
 ## Project structure
 
-The app is now organized as a small static site instead of a single giant HTML file:
-
 - `index.html` — main app entry
 - `retirement-calculator.html` — compatibility redirect to `index.html`
-- `styles.css` — extracted styling
-- `js/legacy-app.js` — existing browser/UI behavior from the original app
-- `js/calculations.js` — extracted calculation helpers for easier testing
-- `js/enhancements.js` — validation and UX improvements
-- `tests/calculations.test.js` — automated tests for core formulas
-- `docs/PLAN.md` — concrete improvement roadmap
-- `docs/AUDIT.md` — technical and modeling audit notes
+- `styles.css` — styling
+- `js/legacy-app.js` — browser/UI behavior
+- `js/calculations.js` — core calculation helpers
+- `js/enhancements.js` — validation and UX helpers
+- `tests/calculations.test.js` — automated checks for core formulas
+- `ROADMAP.md` — future directions
 
 ## Running locally
 
@@ -83,9 +80,7 @@ npx serve .
 
 ## Testing
 
-The repo now includes a lightweight Node-based test suite for the extracted calculation layer.
-
-Run:
+Run the calculation tests with:
 
 ```bash
 node --test tests/calculations.test.js
@@ -101,7 +96,7 @@ The required savings estimate uses:
 Required savings = annual expenses / withdrawal rate
 ```
 
-This is useful as a planning heuristic, but it is not a guarantee of portfolio safety.
+This is a useful planning heuristic, but it is not a guarantee of portfolio safety.
 
 ### Portfolio longevity
 
@@ -113,11 +108,11 @@ Portfolio longevity is estimated using a deterministic year-by-year simulation:
 4. increase spending by inflation each year
 5. continue until depletion or an upper cap is reached
 
-This is intentionally simple and easy to reason about, but it does not model variable market returns.
+This keeps the calculator simple and easy to reason about, but it does not model variable market returns.
 
 ### Real return rate
 
-The app uses inflation-adjusted return math:
+The calculator uses inflation-adjusted return math:
 
 ```text
 Real return = ((1 + nominal return) / (1 + inflation)) - 1
@@ -125,7 +120,7 @@ Real return = ((1 + nominal return) / (1 + inflation)) - 1
 
 ### Social Security
 
-Social Security claiming adjustments are currently simplified:
+Social Security claiming adjustments are simplified:
 
 - early claiming reduces benefits using an approximate linear adjustment
 - delayed claiming increases benefits using an approximate delayed-retirement-credit assumption
@@ -142,53 +137,12 @@ Current limits include:
 - investment income not fully separated into qualified dividends / LTCG vs ordinary income
 - no RMD, IRMAA, or advanced retirement-tax planning logic
 
-## Improvements included in this refactor
+## Future directions
 
-This round of work focused on maintainability and trust, not just adding more features.
+Some natural next steps for the project:
 
-### Codebase improvements
-
-- split the app into HTML / CSS / JS files
-- extracted core formulas into `js/calculations.js`
-- added test coverage for several key formulas
-- added `.gitignore`
-- preserved backward compatibility with a redirect from `retirement-calculator.html`
-
-### UX improvements
-
-- added validation summary for invalid or inconsistent inputs
-- added field-level validation styling
-- added lightweight `localStorage` persistence so inputs survive refreshes
-- added an in-app note clarifying that the calculator is illustrative
-
-### Documentation improvements
-
-- added `docs/PLAN.md`
-- added `docs/AUDIT.md`
-- rewrote this README to better explain scope, assumptions, and limitations
-
-## Audit highlights
-
-A quick summary of the highest-value recommendations:
-
-1. replace `js/legacy-app.js` with a cleaner unified app controller
-2. reduce duplicate event wiring and repeated calculation paths
-3. improve Social Security and tax-model fidelity
-4. add export/import for scenarios
-5. consider optional scenario-based or Monte Carlo analysis later
-
-See `docs/AUDIT.md` for the fuller write-up.
-
-## Suggested next steps
-
-If you want to keep improving the project after this refactor, the best order is:
-
-1. simplify the UI/controller layer
-2. improve tax accuracy around investment income
-3. improve Social Security logic
-4. add save/load/export/import scenarios
-5. add richer scenario analysis
-
-## Notes
-
-This tool is already a good prototype for quick planning conversations. The main goal of this refactor is to make it easier to maintain, easier to review, and more honest about what the model does and does not cover.
+- simplify the UI/controller layer
+- improve tax accuracy around investment income
+- improve Social Security logic
+- add save/load/export/import scenarios
+- add richer scenario analysis
