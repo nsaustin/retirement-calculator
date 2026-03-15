@@ -1,243 +1,148 @@
-# Retirement Calculator Documentation
+# Retirement Calculator
 
-## Table of Contents
-1. [Overview](#overview)
-2. [Features](#features)
-3. [How to Use the Calculator](#how-to-use-the-calculator)
-4. [Core Calculations](#core-calculations)
-5. [Social Security Benefits Analysis](#social-security-benefits-analysis)
-6. [Tax Bracket Estimation](#tax-bracket-estimation)
-7. [Data Visualization](#data-visualization)
-8. [Technical Implementation Details](#technical-implementation-details)
+A static browser-based retirement planning calculator for quick what-if analysis around:
+
+- retirement readiness
+- portfolio longevity
+- inflation impact
+- Social Security timing
+- basic federal retirement tax estimates
+- printable PDF summaries
+
+![Screenshot](screen.png)
 
 ## Overview
 
-The Retirement Calculator is a comprehensive web application designed to help individuals assess their financial readiness for retirement. It combines multiple financial aspects of retirement planning including savings longevity analysis, Social Security optimization, and tax bracket estimation into a single interface.
+This project helps answer practical planning questions like:
 
-This tool helps answer critical questions such as:
-- Do I have enough saved for retirement?
-- How long will my money last?
-- When should I claim Social Security benefits?
-- What will my tax situation look like in retirement?
+- How much do I need saved to support my spending?
+- How long might my portfolio last under a given withdrawal rate?
+- How much does Social Security reduce portfolio pressure?
+- What does my retirement income mix do to my estimated federal taxes?
 
-![image](screen.png)
-## Features
+The calculator runs entirely client-side in the browser.
 
-### Core Retirement Analysis
-- **Financial Readiness Assessment**: Determines if your current net worth is sufficient for retirement
-- **Longevity Calculation**: Projects how long your savings will last based on withdrawal rates
-- **Inflation Impact Analysis**: Shows how inflation will affect your purchasing power over time
-- **Real Return Rate Calculation**: Factors in inflation to show true investment returns
+## Scope and limitations
 
-### Social Security Optimization
-- **Benefit Estimation**: Calculates benefits based on claiming age (62-70)
-- **Strategy Comparison**: Visualizes how different claiming ages affect both benefit amount and portfolio longevity
-- **Spouse Benefits Integration**: Includes spouse's benefits in the overall retirement plan
-- **Coverage Analysis**: Shows what percentage of expenses Social Security will cover
+This is a simplified planning tool, not a full financial-planning engine.
 
-### Tax Bracket Estimation
-- **Retirement Tax Projection**: Estimates your tax bracket based on various retirement income sources
-- **Income Source Analysis**: Displays how different income types contribute to your taxable income
-- **Marginal vs. Effective Rate Comparison**: Shows the difference between your top tax bracket and overall tax rate
-- **Tax Strategy Recommendations**: Suggests optimization strategies based on your specific tax situation
+It does **not** currently model all of the following:
 
-### Expense Analysis
-- **Detailed Expense Tracking**: Breaks down expenses by category (housing, food, healthcare, etc.)
-- **Total vs. Detailed View**: Choose between simple total monthly expenses or detailed categorization
+- sequence-of-returns risk / Monte Carlo outcomes
+- state income taxes
+- required minimum distributions (RMDs)
+- Medicare premiums / IRMAA
+- ACA subsidy interactions
+- detailed qualified-dividend / long-term capital gains handling
+- changing spending by life stage
+- long-term care shocks
+- survivor / spousal Social Security edge cases in full detail
+- future tax-law changes
 
-### PDF Creation
-- **Create PDF Report**: Creates a PDF Report of the key details and charts
+Treat the results as **illustrative estimates**, not tax, legal, or investment advice.
 
-## How to Use the Calculator
+## Project structure
 
-### Step 1: Enter Basic Information
-- **Current Age**: Your current age
-- **Current Net Worth**: Total value of your investments and savings intended for retirement
+- `index.html` — main app entry
+- `retirement-calculator.html` — compatibility redirect to `index.html`
+- `styles.css` — styling
+- `js/legacy-app.js` — browser/UI behavior
+- `js/calculations.js` — core calculation helpers
+- `js/enhancements.js` — validation and UX helpers
+- `tests/calculations.test.js` — automated checks for core formulas
+- `ROADMAP.md` — future directions
 
-### Step 2: Enter Monthly Expenses
-- Choose between entering **total monthly expenses** or **detailed expenses by category**
-- If selecting detailed view, enter expenses for categories like housing, utilities, food, etc.
+## Running locally
 
-### Step 3: Set Financial Assumptions
-- **Annual Withdrawal Rate**: Percentage of portfolio you'll withdraw annually (typically 3-5%)
-- **Expected Annual Return**: Projected investment returns before inflation (typically 5-8%)
-- **Expected Annual Inflation**: Projected inflation rate (typically 2-3%)
+Because this is a static app, you can either open `index.html` directly or run a tiny local server.
 
-### Step 4: Social Security Benefits (Optional)
-- Select whether to include Social Security benefits
-- Enter your expected benefit at full retirement age (or use the estimator tool)
-- Select your planned claiming age (62-70)
-- Optionally include spouse's benefits
+### Option 1: open directly
 
-### Step 5: Tax Bracket Estimation (Optional)
-- Select your filing status (Single, Married Filing Jointly, etc.)
-- Choose between standard or itemized deductions
-- Enter projected retirement income sources:
-  - Social Security (auto-filled if entered earlier)
-  - Pension income
-  - Traditional IRA/401(k) withdrawals
-  - Roth IRA/401(k) withdrawals
-  - Investment income
-  - Rental income
-  - Other income
+Open `index.html` in your browser.
 
-### Step 6: Calculate Results
-- Click the "Calculate Retirement Readiness" button for core analysis
-- Click the "Calculate Tax Bracket" button for tax analysis
-- Review results in the various output sections
+### Option 2: run a local server
 
-### Step 7: Create PDF Report (Optional)
-- Click the red "Download PDF Report" button for a PDF report saved on your local computer
-
-## Core Calculations
-
-### Required Retirement Savings
-```
-Required Savings = Annual Expenses ÷ Withdrawal Rate
-```
-Example: $60,000 annual expenses ÷ 4% withdrawal rate = $1,500,000 required savings
-
-### Real Return Rate
-```
-Real Return Rate = ((1 + Nominal Return Rate) ÷ (1 + Inflation Rate)) - 1
-```
-Example: ((1 + 7%) ÷ (1 + 2.5%)) - 1 = 4.39% real return rate
-
-### Money Duration Calculation
-The calculator uses a year-by-year simulation approach to determine how long your money will last:
-
-1. Start with initial balance = net worth
-2. For each year:
-   - Calculate investment returns: balance × nominal return rate
-   - Calculate withdrawal amount (adjusted for inflation each year)
-   - New balance = previous balance + returns - withdrawal
-   - Continue until balance reaches zero or exceeds maximum years (set at 200)
-
-If the real return rate is greater than or equal to the withdrawal rate, money is considered to last indefinitely.
-
-### Inflation Impact
-The calculator shows purchasing power reduction using:
-```
-Future Purchasing Power = Current Amount ÷ (1 + Inflation Rate)^Years
+```bash
+python -m http.server 8000
 ```
 
-## Social Security Benefits Analysis
+Then open:
 
-### Benefit Adjustment by Claiming Age
-The calculator adjusts the Full Retirement Age (FRA) benefit amount based on claiming age:
-- **Before FRA (67)**: Reduces benefit by approximately 6.67% per year
-- **After FRA**: Increases benefit by 8% per year
-
-For example, claiming at 62 (5 years early) reduces benefits to about 70% of FRA amount, while claiming at 70 (3 years late) increases benefits to about 124% of FRA amount.
-
-### Social Security Coverage Calculation
-```
-SS Coverage = (Annual SS Benefit ÷ Annual Expenses) × 100%
+```text
+http://localhost:8000
 ```
 
-### Benefit Estimation Method
-If you don't have a Social Security statement, the calculator estimates your benefit using:
-1. Birth year (to determine Full Retirement Age)
-2. Years worked (out of maximum 35)
-3. Average annual income (highest 35 years)
+Or with `serve`:
 
-The calculator then applies a simplified version of the Social Security benefit formula with bend points for Primary Insurance Amount (PIA) calculation.
-
-## Tax Bracket Estimation
-
-### 2025 Federal Tax Brackets
-The calculator uses 2025 federal income tax brackets (projected with inflation adjustments):
-
-#### Single Filers
-- 10%: $0 to $11,925
-- 12%: $11,926 to $48,500
-- 22%: $48,501 to $103,400
-- 24%: $103,401 to $197,450
-- 32%: $197,451 to $250,800
-- 35%: $250,801 to $626,950
-- 37%: $626,951+
-
-#### Married Filing Jointly
-- 10%: $0 to $23,850
-- 12%: $23,851 to $97,000
-- 22%: $97,001 to $206,800
-- 24%: $206,801 to $394,900
-- 32%: $394,901 to $501,600
-- 35%: $501,601 to $752,350
-- 37%: $752,351+
-
-### Standard Deductions (2025)
-- Single: $15,000
-- Married Filing Jointly: $30,000
-- Head of Household: $22,550
-- Married Filing Separately: $15,000
-
-### Social Security Taxation
-The calculator determines how much of your Social Security benefits are taxable using the IRS "combined income" formula:
-```
-Combined Income = AGI + Non-taxable interest + ½ of Social Security benefits
+```bash
+npx serve .
 ```
 
-Taxable percentage based on combined income:
+## Testing
 
-#### Single, Head of Household, Married Filing Separately
-- Below $25,000: 0% taxable
-- $25,000 to $34,000: 50% taxable
-- Above $34,000: 85% taxable
+Run the calculation tests with:
 
-#### Married Filing Jointly
-- Below $32,000: 0% taxable
-- $32,000 to $44,000: 50% taxable
-- Above $44,000: 85% taxable
+```bash
+node --test tests/calculations.test.js
+```
 
-### Tax Calculation
-1. Calculate taxable income after accounting for:
-   - Social Security taxability
-   - Tax-free income (Roth distributions)
-   - Deductions (standard or itemized)
-2. Apply progressive tax brackets to calculate federal tax
-3. Calculate effective tax rate: Total Federal Tax ÷ Total Income
+## Core modeling assumptions
 
-## Data Visualization
+### Retirement readiness
 
-### Net Worth Projection Chart
-- Shows projected net worth over time with and without Social Security
-- Includes inflation-adjusted values
-- Indicates portfolio depletion point
+The required savings estimate uses:
 
-### Social Security Strategy Chart
-- Compares monthly benefit amounts at different claiming ages (62-70)
-- Shows impact on portfolio longevity for each claiming age
+```text
+Required savings = annual expenses / withdrawal rate
+```
 
-### Tax Analysis Charts
-- **Income Sources Breakdown**: Doughnut chart showing composition of income
-- **Tax by Bracket**: Pie chart showing amount of tax paid in each tax bracket
+This is a useful planning heuristic, but it is not a guarantee of portfolio safety.
 
-## Technical Implementation Details
+### Portfolio longevity
 
-### Key Technologies
-- **HTML/CSS/JavaScript**: Core web technologies
-- **Chart.js**: Data visualization library for all charts
-- **No external dependencies**: Single HTML file with embedded JavaScript and CSS
+Portfolio longevity is estimated using a deterministic year-by-year simulation:
 
-### Calculation Methods
-- **Portfolio Projection**: Year-by-year simulation approach
-- **Social Security Adjustment**: Linear reduction/increase based on claiming age vs. FRA
-- **Tax Calculation**: Progressive bracket system with separate handling for each income type
+1. start with current portfolio balance
+2. apply annual investment return
+3. subtract annual spending
+4. increase spending by inflation each year
+5. continue until depletion or an upper cap is reached
 
-### Data Storage
-- All data is session-based (not saved between browser sessions)
-- No server-side processing or data storage
-- All calculations performed client-side in the browser
+This keeps the calculator simple and easy to reason about, but it does not model variable market returns.
 
-### Accessibility Features
-- Responsive design works on various screen sizes
-- Clear color contrast for readability
-- Semantic HTML structure
+### Real return rate
 
----
+The calculator uses inflation-adjusted return math:
 
-This retirement calculator provides a comprehensive framework for retirement planning, incorporating multiple financial aspects into a single tool. While it offers sophisticated analysis, remember that it's based on user inputs and projections which may not represent actual future conditions. For personalized financial advice, consider consulting with a certified financial planner.
+```text
+Real return = ((1 + nominal return) / (1 + inflation)) - 1
+```
 
+### Social Security
 
-[def]: screen.png
+Social Security claiming adjustments are simplified:
+
+- early claiming reduces benefits using an approximate linear adjustment
+- delayed claiming increases benefits using an approximate delayed-retirement-credit assumption
+- the estimator is an approximation, not an SSA-grade benefits calculator
+
+### Taxes
+
+The tax section is best understood as a **basic federal estimate**.
+
+Current limits include:
+
+- no state tax handling
+- simplified Social Security taxation thresholds
+- investment income not fully separated into qualified dividends / LTCG vs ordinary income
+- no RMD, IRMAA, or advanced retirement-tax planning logic
+
+## Future directions
+
+Some natural next steps for the project:
+
+- simplify the UI/controller layer
+- improve tax accuracy around investment income
+- improve Social Security logic
+- add save/load/export/import scenarios
+- add richer scenario analysis
