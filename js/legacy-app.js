@@ -1,3 +1,10 @@
+// Chart instance references for proper cleanup
+let retirementChart = null;
+const ssStrategyCharts = {};
+let taxSummaryChart = null;
+let incomeDetailsChart = null;
+let taxDetailsChart = null;
+
 // Get DOM elements
         const withdrawalRateSlider = document.getElementById('withdrawal-rate');
         const withdrawalRateValue = document.getElementById('withdrawal-rate-value');
@@ -415,7 +422,10 @@ function createRetirementChart(netWorth, annualExpenses, withdrawalRate, nominal
   
   // Create chart
   const ctx = canvas.getContext('2d');
-  const chart = new Chart(ctx, {
+  if (retirementChart) {
+    retirementChart.destroy();
+  }
+  retirementChart = new Chart(ctx, {
     type: 'bar',
     data: {
       labels: labels,
@@ -680,17 +690,6 @@ includeSpouse.addEventListener('change', () => {
     }
 });
 
-// Toggle all Social Security fields
-ssIncludeSelect.addEventListener('change', () => {
-    const containers = document.querySelectorAll('#ss-method-container, #ss-statement-fields, #ss-estimate-fields, .spouse-ss-section');
-    if (ssIncludeSelect.value === 'yes') {
-        containers.forEach(container => container.style.display = 'block');
-        // Make sure the correct estimation method is shown
-        ssMethodSelect.dispatchEvent(new Event('change'));
-    } else {
-        containers.forEach(container => container.style.display = 'none');
-    }
-});
 
 // UPDATED: Modified event listeners to update strategy chart when inputs change
 ssMonthlyBenefit.addEventListener('input', function() {
@@ -1016,7 +1015,10 @@ function createSSStrategyChart(fraBenefit, currentAge, currentNetWorth, annualEx
     
     // Create chart
     const ctx = canvas.getContext('2d');
-    new Chart(ctx, {
+    if (ssStrategyCharts[containerId]) {
+        ssStrategyCharts[containerId].destroy();
+    }
+    ssStrategyCharts[containerId] = new Chart(ctx, {
         type: 'bar',
         data: {
             labels: labels,
@@ -1098,7 +1100,7 @@ function createSSStrategyChart(fraBenefit, currentAge, currentNetWorth, annualEx
 const originalCalculateBtnHandler = calculateBtn.onclick;
 calculateBtn.onclick = function() {
     if (originalCalculateBtnHandler) {
-        originalCalculateBtnHandler.call.call(this);
+        originalCalculateBtnHandler.call(this);
     } else {
         // Otherwise, just run the default calculation code
     }
@@ -1443,7 +1445,8 @@ function createTaxBracketChart(incomeBreakdown, taxBreakdown, filingStatus) {
     
     // Create combo chart with income sources and tax brackets
     const ctx = canvas.getContext('2d');
-    new Chart(ctx, {
+    if (taxSummaryChart) taxSummaryChart.destroy();
+    taxSummaryChart = new Chart(ctx, {
         type: 'bar',
         data: {
             labels: ['Income Sources', 'Tax Brackets'],
@@ -1551,7 +1554,8 @@ function createTaxBracketChart(incomeBreakdown, taxBreakdown, filingStatus) {
     incomeDetailsContainer.appendChild(incomeDetailsCanvas);
     
     const incomeDetailsCtx = incomeDetailsCanvas.getContext('2d');
-    new Chart(incomeDetailsCtx, {
+    if (incomeDetailsChart) incomeDetailsChart.destroy();
+    incomeDetailsChart = new Chart(incomeDetailsCtx, {
         type: 'doughnut',
         data: {
             labels: incomeLabels,
@@ -1607,7 +1611,8 @@ function createTaxBracketChart(incomeBreakdown, taxBreakdown, filingStatus) {
     taxDetailsContainer.appendChild(taxDetailsCanvas);
     
     const taxDetailsCtx = taxDetailsCanvas.getContext('2d');
-    new Chart(taxDetailsCtx, {
+    if (taxDetailsChart) taxDetailsChart.destroy();
+    taxDetailsChart = new Chart(taxDetailsCtx, {
         type: 'pie',
         data: {
             labels: taxLabels,
